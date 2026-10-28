@@ -125,6 +125,11 @@ and for a circuit that misbehaves. Pull requests are welcome; see [CONTRIBUTING.
 
 If the skill saved you an evening with Multisim, a ⭐ helps other students and engineers find it.
 
+## Author
+
+Made by [@vovandel155-tech](https://github.com/vovandel155-tech) together with Claude.
+Questions and ideas — [open an issue](https://github.com/vovandel155-tech/multisim-schemes/issues/new/choose).
+
 ## License
 
 [MIT](LICENSE). NI Multisim is a trademark of National Instruments / Emerson. This project is not affiliated with or

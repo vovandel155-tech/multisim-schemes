@@ -7,6 +7,12 @@ files, packaged as a Claude skill (`.claude/skills/multisim-scheme/`), plus a ga
 - **Everything written into the repository is English**: code, comments, docs, commit messages, release notes.
 - **Talk to the owner in Russian** (chat replies only).
 
+## Commit authorship
+- Commits are authored by the owner — `vovandel155-tech <289246918+vovandel155-tech@users.noreply.github.com>`
+  (the GitHub no-reply address; never a personal e-mail) — with Claude as co-author via the `Co-Authored-By` trailer.
+  Set it per clone: `git config user.name vovandel155-tech` and
+  `git config user.email 289246918+vovandel155-tech@users.noreply.github.com`.
+
 ## Owner and verification
 - The owner checks every result by hand: downloads the `.ms14` from GitHub and opens it in **Multisim 14.3** on Windows.
   A new kind of circuit or element counts as working only after that check — build one at a time and wait.
