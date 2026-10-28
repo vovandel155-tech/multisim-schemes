@@ -1,0 +1,31 @@
+name: Missing part
+description: A Multisim part you need is not in the catalog
+title: "Part: "
+labels: ["part request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check first: `python3 .claude/skills/multisim-scheme/scripts/registry.py --need NAME` — it also lists similar names.
+        If you have Multisim, you can get the part yourself in a second with `get_parts.bat` and attach the donor file here.
+  - type: input
+    id: part
+    attributes:
+      label: Part name as in Multisim «Place Component»
+      placeholder: e.g. TIP121G, LM358N, BC547B
+    validations:
+      required: true
+  - type: input
+    id: family
+    attributes:
+      label: Group / family (if you know it)
+      placeholder: e.g. Transistors / DARLINGTON_NPN
+  - type: textarea
+    id: why
+    attributes:
+      label: What circuit is it for?
+  - type: textarea
+    id: donor
+    attributes:
+      label: Donor file (optional)
+      description: Drag the .ms14 from donors_new/ here — a file saved by Multisim with the part placed on the sheet.

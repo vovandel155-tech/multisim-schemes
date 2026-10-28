@@ -1,9 +1,17 @@
-# Multisim Scheme — a Claude skill that builds NI Multisim circuits
+<h1 align="center">Multisim Scheme</h1>
 
-![Multisim 14.x](https://img.shields.io/badge/NI%20Multisim-14.x-0a5ea8)
-![Python 3](https://img.shields.io/badge/python-3.8%2B-3776ab)
-![No dependencies](https://img.shields.io/badge/core-standard%20library%20only-2e7d32)
-![License: MIT](https://img.shields.io/badge/license-MIT-black)
+<p align="center"><b>A Claude skill that turns a schematic picture into a native NI Multisim <code>.ms14</code> file.</b><br>
+Real Multisim parts · instruments and probes · checked in ngspice before you open it</p>
+
+<p align="center">
+  <a href="https://github.com/vovandel155-tech/multisim-schemes/tags"><img src="https://img.shields.io/github/v/tag/vovandel155-tech/multisim-schemes?label=release&color=2da44e" alt="release"></a>
+  <img src="https://img.shields.io/badge/NI%20Multisim-14.x-0a5ea8" alt="Multisim 14.x">
+  <img src="https://img.shields.io/badge/python-3.8%2B-3776ab" alt="Python 3.8+">
+  <img src="https://img.shields.io/badge/core-standard%20library%20only-2e7d32" alt="standard library only">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-black" alt="MIT"></a>
+</p>
+
+<p align="center"><img src="docs/assets/demo.gif" width="900" alt="A script is typed, built and checked; the circuit appears"></p>
 
 Send Claude a schematic — a screenshot, a textbook figure, an LTspice drawing or just a description — and get back a
 native **`.ms14` file** that opens in NI Multisim 14 without a single dialog and simulates right away. The layout
@@ -101,6 +109,21 @@ digital electronics textbook, and demos of catalog parts, instruments, probes an
 - Elements «without a sample» (`SpiceLib`) are experimental — use catalog parts instead;
   [`gallery/experimental/`](gallery/experimental/) keeps an unfinished bridge amplifier for reference.
 - Extracting new parts needs Multisim on Windows; building circuits works anywhere Python runs.
+
+## Roadmap
+
+- More blocks: op-amp stages (inverting, non-inverting, integrator), 555 timer modes, flip-flops on gates.
+- Probe labels in the overlap check.
+- A larger built-in catalog (more ICs and power parts) contributed through `get_parts.bat`.
+- Horizontal and multi-section IC layouts verified in Multisim.
+
+## Feedback and contributing
+
+Something did not open, a part is missing, a block would save you time? Open an
+[issue](https://github.com/vovandel155-tech/multisim-schemes/issues/new/choose) — there are templates for a missing part
+and for a circuit that misbehaves. Pull requests are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+If the skill saved you an evening with Multisim, a ⭐ helps other students and engineers find it.
 
 ## License
 

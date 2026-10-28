@@ -1,0 +1,10 @@
+name: Idea
+description: A block, an instrument, a check or anything that would save you time
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help
+    validations:
+      required: true

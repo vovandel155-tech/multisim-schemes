@@ -1,0 +1,29 @@
+name: Circuit problem
+description: A generated .ms14 does not open, shows a dialog, or simulates wrongly
+title: "Circuit: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The dialog text, the wrong reading, or what looks off on the sheet. Screenshots help a lot.
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: The circuit
+      description: The picture you started from and/or the generated script; attach the .ms14 if you can.
+  - type: input
+    id: multisim
+    attributes:
+      label: Multisim version
+      placeholder: e.g. 14.3
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where was it built
+      options: [claude.ai chat, Claude Code, plain Python]
