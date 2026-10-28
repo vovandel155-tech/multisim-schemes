@@ -25,9 +25,9 @@ python3 <skill folder>/scripts/update.py
 The script copies the skill to a working folder and downloads from GitHub the files changed since the zip was uploaded
 (code, part catalog, blocks, rules). The last line is `SKILL_DIR=<folder>`: **use paths from it from now on**
 (`<SKILL_DIR>/scripts`, `<SKILL_DIR>/examples`…). If it prints «SKILL.md changed», read `<SKILL_DIR>/SKILL.md` and follow it.
-**In the first answer, quote the version line and the «version note: …» line verbatim** — this is how the user sees that
-the update works. With no network or closed access the script says so and works with the zip version: tell the user in one
-line what is needed (network access to raw.githubusercontent.com in the claude.ai settings) and go on.
+In the first answer mention the skill version in one short line (e.g. «skill v5, updated from GitHub»). With no network
+or closed access the script says so and works with the zip version: tell the user in one line what is needed (network
+access to raw.githubusercontent.com in the claude.ai settings) and go on.
 Inside a git repository (Claude Code) the script downloads nothing — `git pull` updates it there.
 
 ## Quick start
