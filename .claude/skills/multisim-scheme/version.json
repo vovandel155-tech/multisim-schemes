@@ -2,10 +2,10 @@
  "repo": "vovandel155-tech/multisim-schemes",
  "branch": "main",
  "path": ".claude/skills/multisim-scheme",
- "version": 5,
- "note": "First public release: English docs, gallery of 26 circuits, block library, self-update",
+ "version": 6,
+ "note": "Docs: verified circuit counts",
  "files": {
-  "SKILL.md": "623d18e41a271fa8c9ec39b7a05a2001d90b7ea5",
+  "SKILL.md": "6c899cba2e906e56f4b3df37e84fb110ca5101af",
   "donors_request.txt": "2b733ef32f49f9423dedec1d5c6a13aa3c70d28e",
   "examples/blocks_and_led.py": "309a176d218cc9688ccff20d9e95411413720e69",
   "examples/cmos_inverter.py": "9d61f9d63f3f5b27ba6d5dff8eaf6ccd68d5978b",

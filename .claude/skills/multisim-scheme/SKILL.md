@@ -12,7 +12,7 @@ A scheme is a short script: elements placed on grid cells, wires, and that is it
 - compresses the file into the .ms14 format;
 - checks the result: references, overlaps, preview, behaviour in ngspice.
 
-Verified in Multisim 14.3: 20 textbook TTL/Schottky TTL/CMOS gates, catalog parts (op-amps, transistors, Darlingtons,
+Verified in Multisim 14.3: 18 textbook TTL/Schottky TTL/CMOS gates, catalog parts (op-amps, transistors, Darlingtons,
 LEDs), instruments, probes, block library, circuits rebuilt from screenshots — they open without dialogs and the
 readings match ngspice.
 
