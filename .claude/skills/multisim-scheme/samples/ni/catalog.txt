@@ -1,0 +1,250 @@
+group            family                       part                     RefDes pins                       donor      status
+                                                                       OnPage                            CoupledShaftMachines.ms14 ok
+CMOS             74HC_2V                      74HC04N_2V               U      1A 1Y GND VCC              DigitalComponentPinModels.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+CMOS             74HC_4V                      74HC04N_4V               U      1A 1Y GND VCC              FrequencyDivider.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74LS                         74LS138N                 U      A B C G1 GND VCC Y0 Y1 Y2 Y3 Y4 Y5 Y6 Y7 ~G2A ~G2B DecimalCounter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74LS                         74LS190N                 U      A B C CLK D GND MAX/MIN QA QB QC QD VCC ^CTEN ^LOAD ^RCO ^U^/D Getting_Started_Final.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74LS                         74LS191N                 U      A B C CLK D GND MAX/MIN QA QB QC QD VCC ^CTEN ^LOAD ^RCO ^U^/D DigitalCounter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74LS                         74LS273N                 U      1D 1Q 2D 2Q 3D 3Q 4D 4Q 5D 5Q 6D 6Q 7D 7Q 8D 8Q CLK GND VCC ~CLR ShiftRegister.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74LS                         74LS373N                 U      1D 1Q 2D 2Q 3D 3Q 4D 4Q 5D 5Q 6D 6Q 7D 7Q 8D 8Q ENG GND VCC ~OC DecimalCounter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74LS                         74LS47N                  U      A B C D GND OA OB OC OD OE OF OG VCC ~BI/RBO ~LT ~RBI Getting_Started_Final.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74LS                         74LS85N                  U      A0 A1 A2 A3 AEQB AGTB ALTB B0 B1 B2 B3 GND OAEQB OAGTB OALTB VCC DigitalCounter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74STD                        7404N                    U      1A 1Y GND VCC              1N4007.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74STD                        7410N                    U      1A 1B 1C 1Y GND VCC        QuizShowVariants.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74STD                        7414N                    U      1A 1Y GND VCC              Fourier_-_Pulse_Width_Modulator.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74STD                        74163N                   U      A B C CLK D ENP ENT GND QA QB QC QD RCO VCC ~CLR ~LOAD Fourier_-_Pulse_Width_Modulator.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74STD                        74164N                   U      A B CLK GND QA QB QC QD QE QF QG QH VCC ~CLR ShiftRegister.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74STD                        74165N                   U      A B C CLK D E F G GND H INH QH SER SH/~LD VCC ~QH ShiftRegister.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74STD                        74191N                   U      A B C CLK D GND MAX/MIN QA QB QC QD VCC ~CTEN ~LOAD ~RCO ~U/D ShiftRegister.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+TTL              74STD                        7474N                    U      1CLK 1D 1Q GND VCC ~1CLR ~1PR ~1Q QuizShowVariants.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Mixed            ADC_DAC                      VDAC                     U      D0 D1 D2 D3 D4 D5 D6 D7 Output Vref+ Vref- RandomWaveformGenerator.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Indicators       AMMETER                      AMMETER_H                U      1 2                        TraceWidth_-_Power_Supply.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Indicators       AMMETER                      AMMETER_V                U      1 2                        TraceWidth_-_Power_Supply.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           ANALOG_VIRTUAL               OPAMP_3T_VIRTUAL         U      IN+ IN- OUT                CircuitParameterApplications2.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           ANALOG_VIRTUAL               OPAMP_5T_VIRTUAL         U      IN+ IN- OUT VS+ VS-        LowPassFilter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Transistors      AWR                          LNA10GHZ                 U      1 2 3 4 5 6 7 8 9 10       LowNoiseAmp10GHZ.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Basic            BASIC_VIRTUAL                ARBITRARY_SPICE_BLOCK    U      a                          ArbitrarySpiceBlock.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Basic            BASIC_VIRTUAL                TS_VIRTUAL               T      1 2 3 4 5                  Experiment_17_Regulator-nf.ms14 ok
+Basic            BASIC_VIRTUAL                VARIABLE_PULLUP_VIRTUAL  U      1                          RandomWaveformGenerator.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Basic            BASIC_VIRTUAL                VOLTAGE_CONTROLLED_RESISTOR_VIRTUAL U      1 2 4 5                    ThermalModelSimulations.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Power            BASSO_SMPS_AUXILIARY         ANALOG_OR                U      A B Y                      BuckConverter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Transistors      BJT_NPN                      2N2222A                  Q      B C E                      24VRelay.ms14 ok
+Transistors      BJT_NPN                      2N3904                   Q      B C E                      1N4007.ms14 ok
+Transistors      BJT_NPN                      2PD602AQL                Q      B C E                      LowNoiseAmp10GHZ.ms14 ok
+Transistors      BJT_NPN                      BC184BP                  Q      B C E                      BC184BP.ms14 ok
+Transistors      BJT_NPN                      BC547B                   Q      B C E                      BC547B.ms14 ok
+Transistors      BJT_NPN                      FZT1049A                 Q      B C E                      FZT1049A.ms14 ok
+Transistors      BJT_NPN                      PMBT3904                 Q      B C E                      Replacing_Components.ms14 ok
+Transistors      BJT_NPN                      SXT3904                  Q      B C E                      PhaseControlledRectifier.ms14 ok
+Transistors      BJT_PNP                      2N2904                   Q      B C E                      LowNoiseAmp10GHZ.ms14 ok
+Transistors      BJT_PNP                      2N3250                   Q      B C E                      BjtAnalyzer.ms14 ok
+Transistors      BJT_PNP                      2N3906                   Q      B C E                      1N4007.ms14 ok
+Transistors      BJT_PNP                      2PA1774R                 Q      B C E                      LowNoiseAmp10GHZ.ms14 ok
+Transistors      BJT_PNP                      PBSS5320T                Q      B C E                      Replacing_Components.ms14 ok
+Basic            CAPACITOR                    CAPACITOR_VIRTUAL        C      1 2                        1N4007.ms14 ok
+Basic            CAP_ELECTROLIT               CAP_ELECTROLIT_VIRTUAL   C      1 2                        Getting_Started_Final.ms14 ok
+CMOS             CMOS_5V                      4009BD_5V                U      I1 O1 VCC VDD VSS          SwitchDebounce.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+CMOS             CMOS_5V                      40106BD_5V               U      1I 1O VDD VSS              SwitchDebounce.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+CMOS             CMOS_5V                      4069BCL_5V               U      I1 O1 VDD VSS              Up-DownCounter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+CMOS             CMOS_5V                      4071BP_5V                U      1A 1B 1Y VDD VSS           Up-DownCounter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+CMOS             CMOS_5V                      4081BT_5V                U      1A 1B 1Y VDD VSS           Up-DownCounter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+CMOS             CMOS_5V                      4520BD_5V                U      1A 1B 1C 1D CP1 EN1 MR1 VDD VSS SwitchDebounce.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           COMPARATOR                   LM339AD                  U      1IN+ 1IN- 1OUT VS+ VS-     Temperature_Sweep_-_Comparator.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Sources          CONTROLLED_CURRENT_SOURCES   ABM_CURRENT              I      1 2                        TransformerModels.ms14 ok
+Sources          CONTROLLED_CURRENT_SOURCES   CURRENT_CONTROLLED_CURRENT_SOURCE I      1 2 3 4                    P4.78.ms14 ok
+Sources          CONTROLLED_CURRENT_SOURCES   VOLTAGE_CONTROLLED_CURRENT_SOURCE I      1 2 3 4                    P10.10.ms14 ok
+Sources          CONTROLLED_VOLTAGE_SOURCES   ABM_VOLTAGE              V      1 2                        TransformerModels.ms14 ok
+Sources          CONTROLLED_VOLTAGE_SOURCES   CURRENT_CONTROLLED_VOLTAGE_SOURCE V      1 2 3 4                    P4.19.ms14 ok
+Sources          CONTROLLED_VOLTAGE_SOURCES   VOLTAGE_CONTROLLED_SQUARE_WAVE V      1 2 3 4                    SPICE_Command_Line.ms14 ok
+Sources          CONTROLLED_VOLTAGE_SOURCES   VOLTAGE_CONTROLLED_VOLTAGE_SOURCE V      1 2 3 4                    BuckConverter.ms14 ok
+Sources          CONTROL_FUNCTION_BLOCKS      ARBITRARY_LAPLACE_FUNCTION A      1 2 3 4                    S-DomainFunctions.ms14 ok
+Sources          CONTROL_FUNCTION_BLOCKS      FREQUENCY_TABLE_FUNCTION A      1 2 3 4                    S-DomainFunctions.ms14 ok
+Sources          CONTROL_FUNCTION_BLOCKS      MULTIPLIER               A      1 2 3                      AmplitudeModulator.ms14 ok
+Sources          CONTROL_FUNCTION_BLOCKS      NONLINEAR_DEPENDENT      A      1 2 3 4 5 6 7 8 9 10       GilbertCellMixer.ms14 ok
+Sources          CONTROL_FUNCTION_BLOCKS      PI_CONTROLLER            A      in+ in- out+ out-          DCMotorDriveCloseLoop.ms14 ok
+Sources          CONTROL_FUNCTION_BLOCKS      TRANSFER_FUNCTION_BLOCK  A      in+ in- out+ out-          S-DomainFunctions.ms14 ok
+Transistors      DARLINGTON_NPN               TIP121G                  Q      B C E                      TIP121G.ms14 ok
+Transistors      DARLINGTON_PNP               TIP127G                  Q      B C E                      TIP127G.ms14 ok
+Sources          DIGITAL_SOURCES              DIGITAL_CLOCK            U      1                          Up-DownCounter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Sources          DIGITAL_SOURCES              DIGITAL_CONSTANT         U      OUT                        SwitchDebounce.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Sources          DIGITAL_SOURCES              INTERACTIVE_DIGITAL_CONSTANT U      OUT                        SwitchDebounce.ms14 ok (the animation moves together with the symbol)
+Diodes           DIODE                        1N4001                   D      A K                        PhaseControlledRectifier.ms14 ok
+Diodes           DIODE                        1N4001GP                 D      A K                        Experiment_17_Regulator-nf.ms14 ok
+Diodes           DIODE                        1N4003G                  D      A K                        Buck_Converter.ms14 ok
+Diodes           DIODE                        1N4007                   D      A K                        1N4007.ms14 ok
+Diodes           DIODE                        1N914                    D      A K                        Experiment_06_Multistage-nf.ms14 ok
+Diodes           DIODE                        1N914A                   D      A K                        Experiment_16_Wien_Bridge-nf.ms14 ok
+Diodes           DIODE                        MUR1510G                 D      A K                        StepperMotorDrive.ms14 ok
+Diodes           DIODES_VIRTUAL               DIODE                    D      A K                        SwitchDebounce.ms14 ok
+Diodes           DIODES_VIRTUAL               DIODE_VIRTUAL            D      A K                        Experiment_08_FET_AGC-nf.ms14 ok
+Diodes           DIODES_VIRTUAL               ZENER_VIRTUAL            D      A K                        Experiment_17_Regulator-nf.ms14 ok
+Misc             FUSE                         0.5_AMP                  F      1 2                        Experiment_17_Regulator-nf.ms14 ok (the animation moves together with the symbol)
+Diodes           FWB                          1G4B42                   D      AC1 AC2 V+ V-              DiodeRectifierwithLinearRegulators.ms14 ok
+Diodes           FWB                          3N246                    D      AC1 AC2 V+ V-              PowerSupply.ms14 ok
+                 FreqCounter                  FREQCOUNTER              XFC    1                          Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+Connectors       GENERIC                      HDR1X2                   J      P1 P2                      LowNoiseAmp10GHZ.ms14 ok
+                 GROUND                       GROUND                   0      GND                        Stripline.ms14 ok
+Connectors       HEADERS_TEST                 HDR1X4                   J      P1 P2 P3 P4                Getting_Started_Final.ms14 ok
+Indicators       HEX_DISPLAY                  DCD_HEX                  U      1 2 3 4                    SwitchDebounce.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Indicators       HEX_DISPLAY                  DCD_HEX_BLUE             U      1 2 3 4                    ShiftRegister.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Indicators       HEX_DISPLAY                  DCD_HEX_GREEN            U      1 2 3 4                    Up-DownCounter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Indicators       HEX_DISPLAY                  SEVEN_SEG_DECIMAL_COM_A_BLUE U      A B C COM D E F G H        Getting_Started_Final.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Transistors      IGBT                         IRG4BC10UD               Q      C E G                      InductiveSwitching.ms14 ok
+                 IMeter                       IMETER                   XCP    1 2 3                      ThreePhaseInverter.ms14 ok (instrument: settings from the donor InstrumentsData)
+Basic            INDUCTOR                     INDUCTOR_VIRTUAL         L      1 2                        1N4007.ms14 ok
+Transistors      JFET_N                       2N5484                   Q      D G S                      1N4007.ms14 ok
+Transistors      JFET_N                       2N5485                   Q      D G S                      Experiment_06_Multistage-nf.ms14 ok
+Transistors      JFET_N                       BF545A                   Q      D G S                      Experiment_08_FET_AGC-nf.ms14 ok
+Transistors      JFET_P                       J176                     Q      D G S                      Experiment_16_RFID_source-nf.ms14 ok
+Indicators       LAMP                         28V_7.5W                 X      1 2                        QuizShowVariants.ms14 ok (the animation moves together with the symbol)
+Indicators       LAMP                         5V_1W                    X      1 2                        QuizShowVariants.ms14 ok (the animation moves together with the symbol)
+Diodes           LED                          LED_blue                 LED    A K                        Getting_Started_Final.ms14 ok (the animation moves together with the symbol)
+Diodes           LED                          LED_green                LED    A K                        QuizShowVariants.ms14 ok
+Diodes           LED                          LED_ir                   LED    A K                        DigitalComponentOutputs.ms14 ok
+Diodes           LED                          LED_orange               LED    A K                        QuizShowVariants.ms14 ok
+Diodes           LED                          LED_red                  LED    A K                        1N4007.ms14 ok
+                 LVInstrument                 LVINSTRUMENT             XLV    b c e                      BjtAnalyzer.ms14 ok (instrument: settings from the donor InstrumentsData)
+Electro_Mechanical MACHINES                     BRUSHLESS_DC_MACHINE_HALL M      A B C Ea Eb Ec Ha Hb Hc Te Theta shaft BrushlessDCDriveSixStep.ms14 ok
+Electro_Mechanical MACHINES                     DC_MACHINE_PERMANENT_MAGNET M      Ea Te omega theta vn vp    CoupledShaftMachines.ms14 ok
+Electro_Mechanical MACHINES                     INDUCTION_MACHINE_SQUIRREL_CAGE M      A B C Te omega             CoupledShaftMachines.ms14 ok
+Electro_Mechanical MACHINES                     STEPPER_MOTOR_2PHASE     M      A+ A- B+ B- Ea Eb Te omega theta StepperMotorPulloutTorque.ms14 ok
+Electro_Mechanical MACHINES                     STEPPER_MOTOR_2PHASE_2WINDING M      A1+ A1- A2+ A2- B1+ B1- B2+ B2- Ea Eb Te shaft theta StepperMotorDrive.ms14 ok
+Electro_Mechanical MACHINES                     SYNCHRONOUS_MACHINE_PERMANENT_MAGNET M      A B C Te Theta shaft       VectorControlPMSM.ms14 ok
+Electro_Mechanical MECHANICAL_LOADS             ARBITRARY_LOAD           U      1                          StepperMotorDrive.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Electro_Mechanical MECHANICAL_LOADS             GEARS                    U      1 2                        CoupledShaftMachines.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Electro_Mechanical MECHANICAL_LOADS             INERTIAL_LOAD            U      1 2                        DCMotorDriveCloseLoop.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Transistors      MOS_ENH_N                    IRFD110                  Q      D G S                      1N4007.ms14 ok
+Transistors      MOS_ENH_N                    NTK3043NT1G              Q      D G S                      Inverter.ms14 ok
+Transistors      MOS_ENH_P                    NTA4151PT1G              Q      D G S                      1N4007.ms14 ok
+Electro_Mechanical MOTION_CONTROLLERS           6STEP_DECODER            U      Ha Hb Hc S1 S2 S3 S4 S5 S6 BrushlessDCDriveSixStep.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Electro_Mechanical MOTION_CONTROLLERS           RAD_PER_SEC_TO_RPM       U      rad_s rpm                  DCMotorDriveCloseLoop.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Electro_Mechanical MOTION_CONTROLLERS           RAD_TO_DEG               U      deg rad                    StepperMotorDrive.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Electro_Mechanical MOTION_CONTROLLERS           STEPPER_FULLSTEP_2PHASE  U      Dir PA+ PA- PB+ PB- Step   StepperMotorDrive.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Electro_Mechanical MOTION_CONTROLLERS           STEPPER_HALFSTEP_2PHASE  U      Dir PA+ PA- PB+ PB- Step   StepperMotorPulloutTorque.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+                 Mulmeter                     MULMETER                 XMM    1 2                        Experiment_17_Regulator-nf.ms14 ok (instrument: settings from the donor InstrumentsData)
+                 Mulmeter_AT                  MULMETER_AT              XMM    1 2 3 4 5                  Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+Analog           OPAMP                        3554AM                   U      IN+ IN- OUT VS+ VS-        Transfer_Function_-_Inverting_Opamp.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        741                      U      BAL1 BAL2 IN+ IN- OUT VS+ VS- Getting_Started_Final.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        AD8009JRT                U      IN+ IN- OUT VS+ VS-        TrapezoidalOscillation.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        AD8517ART                U      IN+ IN- OUT VS+ VS-        LowNoiseAmp10GHZ.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        AD8599ARZ                U      IN+ IN- OUT VS+ VS-        Noise_-_Opamp.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        LF356BN                  U      BAL1 BAL2 IN+ IN- OUT VS+ VS- PhaseControlledRectifier.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        LM207H                   U      IN+ IN- OUT VS+ VS-        P5.78.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        LM258AD                  U      1IN+ 1IN- 1OUT VS+ VS-     RLC_Values.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        LM324AD                  U      1IN+ 1IN- 1OUT VS+ VS-     1N4007.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        LM324AJ                  U      1IN+ 1IN- 1OUT VS+ VS-     Non-InvertingOpAmp.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        LM324AM                  U      1IN+ 1IN- 1OUT VS+ VS-     Fourier_-_Pulse_Width_Modulator.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        LM324D                   U      1IN+ 1IN- 1OUT VS+ VS-     alex_5e_MS_solution_Pb_05.75.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        LM324J                   U      1IN+ 1IN- 1OUT VS+ VS-     P5.81.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        LM358N                   U      1IN+ 1IN- 1OUT VS+ VS-     LM358N.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        LM741CN                  U      IN+ IN- OFFSET1 OFFSET2 OUT VS+ VS- AmplitudeModulator.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        TL071ID                  U      BAL1 BAL2 IN+ IN- OUT VS+ VS- AdjFreqAmp.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           OPAMP                        UA741CD                  U      BAL1 BAL2 IN+ IN- OUT VS+ VS- P5.76.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Basic            POTENTIOMETER                POTENTIOMETER_VIRTUAL    R      1 2 3                      Getting_Started_Final.ms14 ok
+Power            POWER_CONTROLLERS            PHASE_ANGLE_CONTROLLER   U      Ph+ Ph- T alpha            ControlledRectifier.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Power            POWER_CONTROLLERS            PHASE_ANGLE_CONTROLLER_6PULSE U      PhA PhB PhC T1 T2 T3 T4 T5 T6 alpha ControlledThreePhaseRectifier.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Power            POWER_CONTROLLERS            PWM                      U      M1 P1                      Buck_Converter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Power            POWER_CONTROLLERS            PWM_COMPLEMENTARY        U      M1 P1 ~P1                  CoupledShaftMachines.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Power            POWER_CONTROLLERS            PWM_SINUSOIDAL_3PHASE    U      P1 P2 P3 ^P1 ^P2 ^P3       ThreePhaseInverter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Transistors      POWER_MOS_N                  BSB008NE2LX              U      D G S Tc Tj                StandardModelSimulations.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Transistors      POWER_MOS_N                  BSZ035N03MS G            Q      D G S Tc Tj                BuckConverter.ms14 ok
+Transistors      POWER_MOS_N                  BSZ100N03MS G            Q      D G S Tc Tj                BuckConverter.ms14 ok
+Transistors      POWER_MOS_N                  IPS050N03L G             Q      D G S Tc Tj                ThermalModelSimulations.ms14 ok
+Transistors      POWER_MOS_N                  MTSF3N02HD               Q      D G S                      StepperMotorDrive.ms14 ok
+Transistors      POWER_MOS_N                  NTB30N06LT4G             Q      D G S                      DC_Motor_-_Actual_H_Bridge.ms14 ok
+Transistors      POWER_MOS_N                  NTB30N20T4G              Q      D G S                      FlybackConverter.ms14 ok
+Transistors      POWER_MOS_N                  NTB45N06LT4G             Q      D G S                      Buck_Converter.ms14 ok
+Transistors      POWER_MOS_N                  NTB6410ANG               Q      D G S                      ExcessiveTolerances.ms14 ok
+Transistors      POWER_MOS_P                  NTB25P06T4G              Q      D G S                      DC_Motor_-_Actual_H_Bridge.ms14 ok
+Sources          POWER_SOURCES                AC_POWER                 V      1 2                        Experiment_17_Regulator-nf.ms14 ok
+Sources          POWER_SOURCES                DC_POWER                 V      1 2                        LowNoiseAmp10GHZ.ms14 ok
+Sources          POWER_SOURCES                DGND                     GND    GND                        Getting_Started_Final.ms14 ok
+Sources          POWER_SOURCES                GROUND                   0      1                          Getting_Started_Final.ms14 ok
+Sources          POWER_SOURCES                THREE_PHASE_DELTA        V      1 2 3                      alex_5e_MS_solution_Pb_12.27a.ms14 ok
+Sources          POWER_SOURCES                THREE_PHASE_WYE          V      1 2 3 N                    CoupledShaftMachines.ms14 ok
+Sources          POWER_SOURCES                VCC                      VCC    VCC                        Getting_Started_Final.ms14 ok
+Sources          POWER_SOURCES                VDD                      VDD    VDD                        Up-DownCounter.ms14 ok
+Sources          POWER_SOURCES                VEE                      VEE    VEE                        Experiment_06_Multistage-nf.ms14 ok
+Sources          POWER_SOURCES                VSS                      VSS    VSS                        DigitalComponentOutputs.ms14 ok
+Indicators       PROBE                        PROBE_RED                X      1                          ShiftRegister.ms14 ok
+Basic            RATED_VIRTUAL                RESISTOR_RATED           R      1 2                        P5.76.ms14 ok (the animation moves together with the symbol)
+Basic            RELAY                        EDR201A05                K      C1 C2 L1 L2                5VRelay.ms14 ok (the animation moves together with the symbol)
+Basic            RELAY                        EDR201A24                K      C1 C2 L1 L2                24VRelay.ms14 ok (the animation moves together with the symbol)
+Basic            RESISTOR                     RESISTOR_VIRTUAL         R      1 2                        Getting_Started_Final.ms14 ok
+                 RF                           Hybridring               U      1 2 3 4                    Stripline.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+RF               RF_BJT_NPN                   BF517                    Q      B C E                      RFAmplifier.ms14 ok
+RF               RF_BJT_NPN                   MRF927T1                 Q      B C E                      RFAmplifierWideband.ms14 ok
+Basic            RPACK                        4Line_Isolated           R      R1A R1B R2A R2B R3A R3B R4A R4B Up-DownCounter.ms14 ok
+Basic            RPACK                        8Line_Isolated           R      R1A R1B R2A R2B R3A R3B R4A R4B R5A R5B R6A R6B R7A R7B R8A R8B Getting_Started_Final.ms14 ok
+Diodes           SCHOTTKY_DIODE               MBR10H100CTG             D      A K                        Boost_Converter.ms14 ok
+Diodes           SCR                          2N5060                   D      A G K                      Experiment_11_SCR-nf.ms14 ok
+Electro_Mechanical SENSORS                      INCREMENTAL_ENCODER      U      A B I w_in w_out           DC_Motor_-_Actual_H_Bridge.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Electro_Mechanical SENSORS                      RESOLVER                 U      cos+ cos- sin+ sin- w_in w_out CoupledShaftMachines.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Sources          SIGNAL_CURRENT_SOURCES       AC_CURRENT               I      1 2                        P10.10.ms14 ok
+Sources          SIGNAL_CURRENT_SOURCES       DC_CURRENT               I      1 2                        CoupledShaftMachines.ms14 ok
+Sources          SIGNAL_CURRENT_SOURCES       PIECEWISE_LINEAR_CURRENT I      1 2                        StepperMotorPulloutTorque.ms14 ok
+Sources          SIGNAL_VOLTAGE_SOURCES       AC_VOLTAGE               V      1 2                        Getting_Started_Final.ms14 ok
+Sources          SIGNAL_VOLTAGE_SOURCES       CLOCK_VOLTAGE            V      1 2                        ShiftRegister.ms14 ok
+Sources          SIGNAL_VOLTAGE_SOURCES       DC_INTERACTIVE_VOLTAGE   V      1 2                        CoupledShaftMachines.ms14 ok
+Sources          SIGNAL_VOLTAGE_SOURCES       PIECEWISE_LINEAR_VOLTAGE V      1 2                        BuckConverter.ms14 ok
+Sources          SIGNAL_VOLTAGE_SOURCES       PULSE_VOLTAGE            V      1 2                        BuckConverter.ms14 ok
+Sources          SIGNAL_VOLTAGE_SOURCES       STEP_VOLTAGE             V      1 2                        DCMotorDriveCloseLoop.ms14 ok
+Sources          SIGNAL_VOLTAGE_SOURCES       TRIANGULAR_VOLTAGE       V      1 2                        alex_5e_MS_solution_Pb_17.66.ms14 ok
+Basic            SWITCH                       PB_DPST                  S      1 2 3 4                    QuizShowVariants.ms14 ok (the animation moves together with the symbol)
+Basic            SWITCH                       SPDT                     S      1 2 3                      Getting_Started_Final.ms14 ok (the animation moves together with the symbol)
+Basic            SWITCH                       SPST                     J      1 2                        Experiment_11_SCR-nf.ms14 ok (the animation moves together with the symbol)
+Basic            SWITCH                       VOLTAGE_CONTROLLED_SPST_BOUNCE S      ctrln ctrlp sw1 sw2        SwitchDebounce.ms14 ok
+Power            SWITCHES                     DIODE                    S      A K                        DCMotorDriveCloseLoop.ms14 ok
+Power            SWITCHES                     DIODE_THERMAL            S      A K Pc Psw Tc Th Tj        NPCThreeLevelInverter.ms14 ok
+Power            SWITCHES                     IGBT_DIODE_THERMAL       S      PcD PcQ PswD PswQ TcD TcQ Th TjD TjQ control neg pos ThreePhaseInverter.ms14 ok
+Power            SWITCHES                     SCR                      S      A G K                      ControlledRectifier.ms14 ok
+Power            SWITCHES                     TRANSISTOR               S      control neg pos            PushPullIsolatedBuckConverter.ms14 ok
+Power            SWITCHES                     TRANSISTOR_DIODE         S      control neg pos            CoupledShaftMachines.ms14 ok
+Diodes           SWITCHING_DIODE              1N4148                   D      A K                        LowNoiseAmp10GHZ.ms14 ok
+Diodes           SWITCHING_DIODE              MMBD7000LT1              D      A K/A                      FlybackConverter.ms14 ok
+Electro_Mechanical Sense                        CurrentSensor            U      I neg pos                  DC_Motor_-_Actual_H_Bridge.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Connectors       TE_CONNECTIVITY              5227677-1                J      G1 S1                      LowNoiseAmp10GHZ.ms14 ok
+Power            THERMAL_NETWORKS             RC_CHAIN_CAUER           U      Tc Tr                      ThreePhaseInverter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Power            THERMAL_NETWORKS             TEMPERATURE_SOURCE       U      1                          ThreePhaseInverter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Misc Digital     TIL                          AND2                     U      A B Y                      DigitalCounter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Misc Digital     TIL                          JK_FF                    U      CLK J K Q RESET SET ~Q     Up-DownCounter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Misc Digital     TIL                          NOT                      U      A Y                        RandomWaveformGenerator.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Misc Digital     TIL                          T_FF                     U      CLK Q RESET SET T ~Q       RandomWaveformGenerator.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Mixed            TIMER                        LM555CM                  U      CON DIS GND OUT RST THR TRI VCC 1N4007.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Basic            TRANSFORMER                  1P1S                     T      p1neg p1pos s1neg s1pos    DiodeRectifierwithLinearRegulators.ms14 ok
+Basic            TRANSFORMER                  1P2S                     T      p1neg p1pos s1neg s1pos s2neg s2pos FlybackConverter.ms14 ok
+Basic            TRANSFORMER                  2P1S                     T      p1neg p1pos p2neg p2pos s1neg s1pos ForwardConverterSaturableTransformer.ms14 ok
+Basic            TRANSFORMER                  2P2S                     T      p1neg p1pos p2neg p2pos s1neg s1pos s2neg s2pos PushPullIsolatedBuckConverter.ms14 ok
+Basic            TRANSFORMER                  INDUCTOR_COUPLING        T      1                          TransformerModels.ms14 ok
+Basic            TRANSFORMER                  TS_IDEAL                 T      1 2 3 4                    alex_5e_MS_solution_Pb_13.08a.ms14 ok
+Basic            TRANSFORMER                  TS_PQ4_12                T      1 2 3 4 5                  TraceWidth_-_Power_Supply.ms14 ok
+Transistors      TRANSISTORS_VIRTUAL          BJT_NPN_VIRTUAL          Q      B C E                      Experiment_17_Regulator-nf.ms14 ok
+Transistors      TRANSISTORS_VIRTUAL          GaAsFET_N_VIRTUAL        Q      D G S                      Stripline.ms14 ok
+Transistors      TRANSISTORS_VIRTUAL          MOS_N_4T                 Q      D G S SUB                  DC_Sweep_-_CMOS_Inverter.ms14 ok
+Transistors      TRANSISTORS_VIRTUAL          MOS_N_DEP                Q      D G S                      DC_Op_Pt_-_Folded_Cascode_Amplifier.ms14 ok
+Transistors      TRANSISTORS_VIRTUAL          MOS_P_4T                 Q      D G S SUB                  DC_Sweep_-_CMOS_Inverter.ms14 ok
+Transistors      TRANSISTORS_VIRTUAL          MOS_P_DEP                Q      D G S                      DC_Op_Pt_-_Folded_Cascode_Amplifier.ms14 ok
+Basic            VARIABLE_CAPACITOR           VARIABLE_CAPACITOR_VIRTUAL C      1 2                        OscillatorRC.ms14 ok
+Power            VOLTAGE_REGULATOR            LM117HVH                 U      ADJ IN OUT                 TraceWidth_-_Power_Supply.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Power            VOLTAGE_REGULATOR            LM317K                   U      ADJ IN OUT                 1N4007.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Power            VOLTAGE_REGULATOR            LT1761ES5-3.3            U      BYP GND IN OUT SHDN        DiodeRectifierwithLinearRegulators.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Power            VOLTAGE_REGULATOR            LT1763CDE-5              U      BYP GND IN OUT SENSE SHDN  DiodeRectifierwithLinearRegulators.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Indicators       VOLTMETER                    VOLTMETER_V              U      1 2                        Experiment_11_SCR-nf.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+Analog           WIDEBAND_AMPS                EL4451CN                 U      FB GAIN+ GAIN- GND IN+ IN- OUT REF VS+ VS- SineWaveOscillator.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+                 Wattmtr                      WATTMTR                  XWM    1 2 3 4                    Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+Basic            Z_LOAD                       A+jB_BLOCK               Z      1 2                        P10.10.ms14 ok
+Basic            Z_LOAD                       A-jB_BLOCK               Z      1 2                        P10.10.ms14 ok
+Basic            Z_LOAD                       Z_LOAD1_DELTA            Z      1 2 3                      alex_5e_MS_solution_Pb_12.14.ms14 ok
+                 bode                         BODE                     XBP    1 2 3 4                    Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+Power            controller                   PWM_SINUSOIDAL_3PHASE    U      P1 P2 P3 P4 P5 P6 ^P1 ^P2 ^P3 ^P4 ^P5 ^P6 NPCThreeLevelInverter.ms14 check: ICs may have sections (U1A…) and hidden supply pins
+                 distor                       DISTOR                   XDA    1                          Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+                 fgen                         FGEN                     XFG    1 2 3                      Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+                 fgen_AT                      FGEN_AT                  XFG    1 2                        Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+                 logconv                      LOGCONV                  XLC    1 2 3 4 5 6 7 8 9          Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+                 logican                      LOGICAN                  XLA    1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+                 netan                        NETAN                    XNA    1 2                        Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+                 scope                        SCOPE                    XSC    1 2 3 4 5 6                Getting_Started_Final.ms14 ok (instrument: settings from the donor InstrumentsData)
+                 scope_4ch                    SCOPE_4CH                XSC    1 2 3 4 5 6                Experiment_13_Int_Diff-nf.ms14 ok (instrument: settings from the donor InstrumentsData)
+                 scope_tk                     SCOPE_TK                 XSC    1 2 3 4 5 6 7              Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+                 spec_an                      SPEC_AN                  XSA    1 2                        Izm.ms14   ok (instrument: settings from the donor InstrumentsData)
+                 wgen                         WGEN                     XWG    1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 Izm.ms14   ok (instrument: settings from the donor InstrumentsData)

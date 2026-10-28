@@ -1,0 +1,6 @@
+# Parts requested by Claude for the next scheme (filled in by Claude, then run get_parts.bat).
+# placeholder;group;family;part   - family and part may list variants: A|B
+# placeholders: Q1 npn, Q2 pnp, M1 n-MOSFET, M2 p-MOSFET, J1 n-JFET, D1 diode, Z1 LED, R1 resistor, C1 capacitor,
+#               L1 inductor, U1 opamp 5 pins, U2 opamp 7 pins, U3 digital IC, U4 timer 555, U5 regulator
+# example:
+# Q1;Transistors;DARLINGTON_NPN;TIP121|TIP121G

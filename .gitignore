@@ -1,0 +1,8 @@
+__pycache__/
+.msgen/
+output/
+/donors_new/
+.claude/skills/multisim-scheme/donors_new/
+/donors_log.txt
+.claude/skills/multisim-scheme/donors_log.txt
+ni_donors/
