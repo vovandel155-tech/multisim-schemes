@@ -140,7 +140,7 @@ TMAX=1e-5           # interactive simulation step, s (instead of «automatic» �
 class Scheme:
     def __init__(s,name,sheet_min=SHEET_MIN,margin=MARGIN_IN,outdir=None,tmax=TMAX):
         s.name=name; s.sheet_min=sheet_min; s.margin=margin; s.outdir=outdir or OUT; s.tmax=tmax
-        s.parts=[]; s.W=[]; s.cnt={}; s.probes=[]
+        s.parts=[]; s.W=[]; s.cnt={}; s.probes=[]; s.analyses=[]
     # ---------- description ----------
     def part(s,name,kind,pin,x,y,rot=0,mirror=False,value=None,label='auto',refdes=None,glob=None,subst=None):
         """element `kind` placed so that its pin `pin` lands in cell (x, y); label: 'auto' | right/left/top/bottom | None"""
@@ -193,6 +193,10 @@ class Scheme:
         p=next(p for p in s.parts if p['name']==t[0])
         o=blocks.pin_offsets(p['kind'],p['pin'],p['rot'],p['mirror'])[t[1]]
         return (p['x']+o[0],p['y']+o[1])
+    def op(s,variables,title='DC Operating Point'):
+        """add DC Operating Point to Batched (Simulate → Analyses and Simulation); vars as in its Output tab:
+        'V(2)', 'I(V1)', 'V(2)-V(3)'. Batched becomes the active analysis — Run starts it"""
+        s.analyses.append(dict(kind='OP',title=title,vars=list(variables)))
     def wire(s,*pts):
         """wire: the first and last items are a terminal ('element','pin') or a junction J(x,y); in between — bends (x,y).
         3–4 wires at a junction; a junction with 2 wires becomes a bend."""
@@ -227,7 +231,7 @@ class Scheme:
         b=s._build((ox,oy)); s.origin=(ox,oy)                     # 2nd pass — centered on a W×H sheet
         os.makedirs(s.outdir,exist_ok=True)
         out=os.path.join(s.outdir,s.name+'.ms14')
-        xml=finalize(b,s.name,out,rename=False,sheet=(W,H),tmax=s.tmax)
+        xml=finalize(b,s.name,out,rename=False,sheet=(W,H),tmax=s.tmax,analyses=s.analyses)
         xp=os.path.join(CACHE,s.name+'_out.xml'); open(xp,'wb').write(xml)
         s.b=b; s.xml=xp; s.sheet=(W,H)
         print('== %s: sheet %d×%d inches, built in %.1f s → %s'%(s.name,W,H,time.time()-t0,os.path.relpath(out,REPO)))

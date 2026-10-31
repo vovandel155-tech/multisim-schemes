@@ -932,7 +932,7 @@ def _probe(b,name,kind,x,y,ref=None,g=9):
     b.probe_data=getattr(b,'probe_data',[])+[ins]
 Builder.probe=_probe
 
-def finalize(b,title,outpath,rename=False,hb=True,preview=True,netext=True,msext=True,sheet=SHEET,tmax=None):
+def finalize(b,title,outpath,rename=False,hb=True,preview=True,netext=True,msext=True,sheet=SHEET,tmax=None,analyses=None):
     D=b.D; R=D.root
     P=R.find('Project')
     if sheet: set_sheet(R,*sheet)
@@ -972,6 +972,9 @@ def finalize(b,title,outpath,rename=False,hb=True,preview=True,netext=True,msext
                     for k in list(e): e.remove(k)
     net_names(b)
     instruments(b)
+    if analyses:
+        import analyses as AN
+        AN.add_batched(R,analyses)
     renew_guids(R,os.path.basename(outpath))
     xml=serialize(R)
     blast.write_ms2(xml,outpath)

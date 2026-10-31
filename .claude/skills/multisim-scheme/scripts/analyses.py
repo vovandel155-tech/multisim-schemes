@@ -8,6 +8,8 @@ ANALYSIS_LIST - the analyses of Batched, in order. The active analysis is the Ac
 of the CMultisimExtension element (e.g. 'batched').
 
     python3 analyses.py FILE.ms14      # list the batched analyses with their settings and variables
+
+Writing: Scheme.op(...) collects analyses, finalize() calls add_batched() for them.
 """
 import os, re, sys, html
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -114,6 +116,46 @@ def show_var(name):
     """Multisim's display form: $n -> V(n), vv1#branch -> I(V1)"""
     name = re.sub(r'\bv([a-z]\w*)#branch', lambda m: 'I(%s)' % m.group(1).upper(), name)
     return re.sub(r'\$([\w:]+)', r'V(\1)', name)
+
+
+def var_record(expr):
+    """variable as written in Multisim's dialog -> NODE record: V(n) -> $n, I(V1) -> vv1#branch, anything else
+    (V(a)-V(b), V(n)/0.4, db(...)) is an expression"""
+    e = expr.strip()
+    name = re.sub(r'\bI\(\s*V(\w+)\s*\)', lambda m: 'vv%s#branch' % m.group(1).lower(), e, flags=re.I)
+    name = re.sub(r'\bV\(\s*([\w:]+)\s*\)', lambda m: '$' + m.group(1).lower(), name, flags=re.I)
+    if re.fullmatch(r'\$[\w:]+', name): typ = '3'
+    elif re.fullmatch(r'vv\w+#branch', name): typ = '4'
+    else: typ = '14'
+    return Node('NODE', 'list', [Node('GROUP', 'long', SELECTED), Node('PLOTDEVICETYPE', 'long', '0'),
+                                 Node('TYPE', 'long', typ), Node('NAME', 'string', name),
+                                 Node('DESCRIPTION', 'string', ''), Node('INI_VALUE', 'double', '0')])
+
+
+def _set(block, key, value):
+    block.get(key).value = value
+
+
+def add_batched(R, items):
+    """append analyses to Batched on the main sheet and make Batched the active analysis.
+    items: dicts kind ('OP'), title, vars (as in Multisim's Output tab). Each entry is a copy of the file's own
+    settings block of that kind with its id, title and selected variables replaced."""
+    import copy
+    from msgen import enc
+    dg = next(d for d in R.iter('CIITDiagram') if d.get('SimState'))
+    prefix, root = loads(dg.get('SimState'))
+    an = root[0].get('ANALYSES')
+    batch, cur = an.get('ANALYSIS_LIST'), an.get('CURRENT_ID')
+    for it in items:
+        b = copy.deepcopy(an.get(it['kind']))
+        b.nl = True
+        _set(b, 'ANALYSIS_ID', cur.value); cur.value = str(int(cur.value) + 1)
+        _set(b, 'PLOT_TITLE', enc(it['title'])[4:])
+        _set(b.get('NODES'), 'Nodes', [var_record(v) for v in it['vars']])
+        batch.value.append(b)
+    dg.set('SimState', dumps(prefix, root))
+    ext = next(x for x in R.iter('Extension') if x.get('Class') == 'CMultisimExtension')
+    ext.set('ActiveAnalysis', '&ASCbatched')
 
 
 def sim_states(xml):
