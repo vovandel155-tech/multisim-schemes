@@ -58,12 +58,19 @@ def _table(rows):
     head = len(rows) > 1 and all(re.fullmatch(r':?-{2,}:?', c.strip()) for c in rows[1])
     if head: rows = [rows[0]] + rows[2:]
     n = max(len(r) for r in rows)
-    w = TEXT_WIDTH // n
+    cols = [[r[j].strip() for r in rows if j < len(r)] for j in range(n)]
+    char = FONT_PT * 10                                   # an average character, twips
+    need = [max((len(w) for c in col for w in c.split()), default=1) * char + 300 for col in cols]   # longest word
+    avg = [sum(map(len, col)) / len(col) + 1 for col in cols]
+    spare = max(TEXT_WIDTH - sum(need), 0)
+    edges, x = [], 0
+    for j in range(n):                                    # the longest word fits, the rest follows the average cell
+        x += need[j] * min(1, TEXT_WIDTH / sum(need)) + spare * avg[j] / sum(avg); edges.append(round(x))
     border = r'\clbrdrl\brdrw10\brdrs\clbrdrt\brdrw10\brdrs\clbrdrr\brdrw10\brdrs\clbrdrb\brdrw10\brdrs'
     out = []
     for k, r in enumerate(rows):
         r = r + [''] * (n - len(r))
-        out.append(r'\trowd\trgaph108\trleft0' + ''.join(r'%s\clvertalc\cellx%d' % (border, w * (j + 1))
+        out.append(r'\trowd\trgaph108\trleft0' + ''.join(r'%s\clvertalc\cellx%d' % (border, edges[j])
                                                         for j in range(n)) + '\r\n')
         bold = head and k == 0
         out.append(''.join(r'\pard\intbl\widctlpar\ql%s %s\cell ' % (r'\b' if bold else r'\b0', _inline(c.strip()))
@@ -140,7 +147,7 @@ def rtf(markup):
 
 def desc_bytes(text):
     """RTF text -> the BaseSixtyFour attribute value (the RTF ends with NUL, as RichEdit streams it)"""
-    raw = text.encode('ascii') + b'\x00'
+    raw = text.rstrip('\x00').encode('latin1') + b'\x00'
     b = base64.b64encode(raw).decode('ascii')
     return ''.join(b[i:i + 60] + '\r\n' for i in range(0, len(b), 60))
 
@@ -194,9 +201,21 @@ def read(path):
     return base64.b64decode(re.sub(r'\s', '', html.unescape(m.group(1)))).rstrip(b'\x00').decode('latin1')
 
 
-def rewrite(src, dst, markup):
-    """put the description into an existing Multisim file `src` (replacing its own) and write `dst`"""
-    import blast, msgen
+def append_rtf(old, markup):
+    """RTF `old` with the blocks of `markup` added at its end (character formatting reset first)"""
+    body = rtf(markup)[len(HEADER):]
+    end = old.rstrip('\x00\r\n').rindex('}')
+    return old[:end] + r'\pard\plain' + body[:-len('}\r\n')] + old[end:]
+
+
+def rewrite(src, dst, markup, append=False):
+    """put the description into an existing Multisim file `src` and write `dst`: replace its own description,
+    or with append=True add `markup` at the end of it (pictures and formatting of the old text stay)"""
+    import blast, msgen, html
     R = msgen.Doc(blast.read_ms(src)).root
-    put(R, markup)
+    old = next((d for d in R.iter('DescBytes')), None) if append else None
+    if old is None: put(R, markup)
+    else:
+        raw = base64.b64decode(re.sub(r'\s', '', old.get('BaseSixtyFour'))).decode('latin1')
+        old.set('BaseSixtyFour', desc_bytes(append_rtf(raw, markup)))
     blast.write_ms2(msgen.serialize(R), dst)

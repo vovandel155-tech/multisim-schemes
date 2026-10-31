@@ -165,3 +165,14 @@ A reference for changing the core (`scripts/msgen.py`) and for taking Multisim f
   or reads `SimState` — the analysis settings have to be translated into commands. Transfer → Export SPICE netlist gives a
   plain netlist with all models; ngspice reproduces Batched results of a real circuit from it (operating point, gain,
   integrated noise) to 4–5 digits.
+
+## Circuit description (`describe.py`, Tools → Description Box Editor)
+- It is a sheet of its own: `Project/UniqueSheets/SheetInfos/SheetContainer/Sheet/Variable/DesignSheet` of class
+  `CDescEditSubSheet` (`DocType` DESCRIPTIONBOX, `Title` «<title>-Description»), plus a `CSheetComponent` with the same
+  `SheetName` next to the main one, a `SheetGroupInfo` entry (`FirstSheetComponentObjectID` = that component) and a
+  project tree item (`CPrjTreeCtrlExtension`). Object IDs as Multisim numbers them: sheet N, its rectangle N+1, container
+  N+2, component N+4. DescData put into the main sheet's `SubSheet` is ignored (verified).
+- The text: `Sheet/SubSheet/DescData/DescBytes/@BaseSixtyFour` — RichEdit RTF (`\ansicpg1251`, Cyrillic as `\'xx`),
+  NUL-terminated, base64 in 60-character lines separated by CR LF. Pictures: `{\pict\pngblip\picw\pich (0.01 mm)
+  \picwgoal\pichgoal (twips) <hex>}`; tables: `\trowd … \cellx … \intbl … \cell … \row`.
+- Verified in Multisim 14.3: headings, paragraphs, bold/italic, sub/superscripts, bullets, tables, Cyrillic, PNG pictures.

@@ -327,6 +327,73 @@ def rewrite(src, dst, batch):
     blast.write_ms2(msgen.serialize(R), dst)
 
 
+KIND_NAMES = {'OP': 'DC Operating Point', 'PHASOR': 'Single Frequency AC', 'AC': 'AC Sweep', 'TRAN': 'Transient',
+              'FOUR': 'Fourier', 'NOISE': 'Noise', 'PSWEEP': 'Parameter Sweep', 'DC_SWEEP': 'DC Sweep',
+              'TSWEEP': 'Temperature Sweep', 'DISTO': 'Distortion', 'TF': 'Transfer Function', 'SENS': 'Sensitivity',
+              'PZ': 'Pole Zero', 'MONTE': 'Monte Carlo', 'WORST': 'Worst Case', 'NOISE_FIGURE': 'Noise Figure'}
+
+
+def _si(v, unit):
+    """1000 -> '1 kHz', 1e-7 -> '0.1 us'"""
+    v = float(v)
+    if v == 0: return '0 ' + unit
+    for k, p in ((1e9, 'G'), (1e6, 'M'), (1e3, 'k'), (1, ''), (1e-3, 'm'), (1e-6, 'u'), (1e-9, 'n')):
+        if abs(v) >= k or k == 1e-9: return '%g %s%s' % (v / k, p, unit)
+
+
+def settings_text(b, names={}):
+    """the main settings of one analysis block, in words (English); names — circuit parameters by lowercase name"""
+    a, k = b.get('ANALYSIS'), b.key
+    def tran(t):
+        tm = t['TMAX']
+        return '%s…%s, max step %s, initial conditions %s' % (_si(t['TSTART'], 's'), _si(t['TSTOP'], 's'),
+            'auto' if tm == 'calculate' else _si(tm, 's'), {'dcop': 'DC operating point', 'auto_ic': 'automatic',
+                                                           'zero': 'zero'}.get(t['IC'], t['IC']))
+    def freq(f):
+        return '%s…%s, %s points%s' % (_si(f['FSTART'], 'Hz'), _si(f['FSTOP'], 'Hz'),
+                                        f['NPOINTS_PER_VARIATION'], '' if f['VARIATION'] == 'lin' else ' per ' +
+                                            {'dec': 'decade', 'oct': 'octave'}[f['VARIATION']])
+    if k == 'OP': return '—'
+    if k == 'PHASOR':
+        return 'f = %s, %s' % (_si(a.get('FREQ_OPT')['FSTART'], 'Hz'),
+                               {'magph': 'magnitude/phase', 'reim': 'real/imaginary'}.get(a['NUMBER_FORMAT'], ''))
+    if k == 'AC': return freq(a)
+    if k == 'TRAN': return tran(a)
+    if k == 'FOUR':
+        return 'fundamental %s, %s harmonics, transient %s' % (_si(a['FundFreq'], 'Hz'), a['NumFreqs'], tran(a.get('Tran')))
+    if k == 'NOISE':
+        ref = a['ReferenceNode']
+        return 'input source %s, output %s%s, %s, %s' % (a['InputRefSource'][1:].upper(), show_var(a['OutputNode']),
+            '' if ref in ('', '$0') else ' relative to ' + show_var(ref), freq(a.get('FREQ_OPT')),
+            'spectral density' if a['SetPointsPerSummary'] == '1' else 'integrated over the range')
+    if k == 'PSWEEP' and a['SweepType'] == '3':
+        v = a.get('VarParamSweep'); p = a.get('VariableParamToSweep')
+        return 'circuit parameter %s = %s; for each: Transient %s' % (names.get(p['name'], p['name']), ', '.join(n.value for n in v.get('List').value),
+                                                                     tran(a.get('Tran')))
+    return ''
+
+
+def markup(path, heading='Analyses (Batched)'):
+    """an English draft of the description section about the Batched list of a .ms14 file (describe.py markup):
+    one table row per analysis — its Grapher page, the analysis with its settings, the output variables.
+    Translate it to the user's language before putting it into the description."""
+    import blast
+    xml = blast.read_ms(path).decode('latin1')
+    prefix, root = loads(sim_states(xml)[0][2])
+    from geom import dec
+    names = {dec('&' + n).lower(): dec('&' + n) for n in re.findall(r'<CircuitParamName NameItem="&amp;([^"]*)"', xml)}
+    rows = ['# ' + heading,
+            'All results are produced by **Batched** (Simulate → Analyses and Simulation): press Run, every analysis '
+            'opens its own Grapher page.',
+            '| Page | Analysis and settings | Output |', '|---|---|---|']
+    for b in root[0].get('ANALYSES').get('ANALYSIS_LIST').value:
+        cell = lambda t: t.replace('|', '/')
+        st = settings_text(b, names)
+        rows.append('| %s | %s | %s |' % (cell(text(b['PLOT_TITLE'])), cell(KIND_NAMES.get(b.key, b.key) +
+                    (': ' + st if st and st != '—' else '')), cell(', '.join(show_var(v['NAME']) for v in selected(b)))))
+    return '\n'.join(rows) + '\n'
+
+
 def sim_states(xml):
     """(start, end, unescaped value) of every SimState attribute in the unpacked file text"""
     return [(m.start(1), m.end(1), html.unescape(m.group(1))) for m in re.finditer(r'SimState="([^"]*)"', xml)]

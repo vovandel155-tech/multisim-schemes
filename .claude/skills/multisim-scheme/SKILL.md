@@ -1,6 +1,6 @@
 ---
 name: multisim-scheme
-description: Builds NI Multisim 14 schematics (.ms14 files) programmatically that open without any dialogs and simulate right away — from a picture, a screenshot or a description, with the layout of the picture. Any part of the Multisim database by name (transistors, op-amps, diodes, LEDs, ICs, sources) from a catalog of real parts; missing parts are extracted from Multisim itself on the user's PC with one .bat file. Instruments (multimeter, oscilloscope, function generator, Bode plotter, counter…) and probes; analyses written into the file — a Batched list (operating point, single-frequency AC, AC sweep, transient, Fourier, noise, parameter sweep over circuit parameters) that runs with one Run, also set up in an existing .ms14; subcircuits (Schottky, multi-emitter transistors), CMOS with substrate pins; a library of ready blocks. Checks: overlaps, PNG preview, ngspice (truth table or signal swing). Use when the user asks to draw/build/generate a Multisim circuit or a .ms14 file, to set up analyses (Batched) in a circuit, sends a schematic image to rebuild in Multisim, or asks to unpack/inspect a .ms14 file — in any language.
+description: Builds NI Multisim 14 schematics (.ms14 files) programmatically that open without any dialogs and simulate right away — from a picture, a screenshot or a description, with the layout of the picture. Any part of the Multisim database by name (transistors, op-amps, diodes, LEDs, ICs, sources) from a catalog of real parts; missing parts are extracted from Multisim itself on the user's PC with one .bat file. Instruments (multimeter, oscilloscope, function generator, Bode plotter, counter…) and probes; analyses written into the file — a Batched list (operating point, single-frequency AC, AC sweep, transient, Fourier, noise, parameter sweep over circuit parameters) that runs with one Run, also set up in an existing .ms14; a formatted circuit description (Description Box) with tables and pictures; subcircuits (Schottky, multi-emitter transistors), CMOS with substrate pins; a library of ready blocks. Checks: overlaps, PNG preview, ngspice (truth table or signal swing). Use when the user asks to draw/build/generate a Multisim circuit or a .ms14 file, to set up analyses (Batched) in a circuit, sends a schematic image to rebuild in Multisim, or asks to unpack/inspect a .ms14 file — in any language.
 ---
 
 # NI Multisim schematics (.ms14) from Python
@@ -213,6 +213,21 @@ active analysis. Variables — as in the Output tab: `'V(2)'`, `'V(outl)-V(outr)
 - Verified in Multisim 14.3: all of the above (`gallery/demos/batched_op`, `batched_phasor`, `batched_all`, and a real
   coursework circuit rewritten by `rewrite`).
 
+## Circuit description (Description Box) — `scripts/describe.py`
+Tools → Description Box Editor: a formatted text saved in the file (in the Design Toolbox it is the sheet
+«<title>-Description»). Write it in the user's language.
+- `S.description(markup)` for a new circuit; `describe.rewrite('in.ms14', 'out.ms14', markup)` replaces the description
+  of an existing file, `append=True` adds to its end (the old text and pictures stay).
+- Markup (as in Markdown): consecutive lines make one paragraph, a blank line starts a new one; `# Heading` (bold),
+  `## Subheading` (bold italic), `- bullet`, `| table | rows |` (a `|---|---|` row after the first makes it a bold
+  header), `**bold**`, `*italic*`, `R_{н}` subscript, `10^{-3}` superscript,
+  `![Рисунок 1 — Схема](file.png){width=12}` — a centered PNG/JPEG picture with its caption, width in cm (default:
+  the text width at most). Body text: Times New Roman 14, first-line indent 1.25 cm, justified (Russian coursework style).
+- Pictures to use: the circuit preview (`.msgen/preview/<name>.png` after `build()`), graphs computed in ngspice
+  (plot them with matplotlib), the user's screenshots.
+- `analyses.markup('file.ms14')` — an English draft of a section about the Batched list (a table: Grapher page,
+  analysis and its settings, variables); translate it to the user's language, then put it with `rewrite(..., append=True)`.
+
 ## Rules (found by checking in Multisim — do not break them)
 - **Compress only with `blast.write_ms2()`** (a real PKWARE implode). Multisim does not open a literal-only file.
 - **Read and write XML only via `msgen.Doc` / `msgen.serialize`.** They keep line breaks inside attributes; without them Multisim silently refuses the file.
@@ -297,7 +312,9 @@ Without the last two the file is still built, and the report says what is missin
 - `scripts/blast.py` — unpacking and compressing .ms14 (`read_ms`, `write_ms2`); `python3 scripts/blast.py f.ms14 f.xml`.
 - `scripts/geom.py`, `scripts/render.py`, `scripts/validate.py` — geometry, PNG preview, ID reference check.
 - `scripts/spice.py` — netlist from the file and the check in ngspice.
-- `scripts/analyses.py` — analyses in the file (Batched): reading, writing, `Batch`, `rewrite`; the format is in `reference.md`.
+- `scripts/analyses.py` — analyses in the file (Batched): reading, writing, `Batch`, `rewrite`, `markup`; the format is in `reference.md`.
+- `scripts/describe.py` — the circuit description (Description Box): markup → RTF, `put`, `rewrite`, `read`.
+- `samples/description_sheet.xml` — the skeleton of the description sheet (from a Multisim-saved file).
 - `scripts/update.py` — self-update from GitHub (step 0); `update.py --release --note TEXT --zip PATH` — (in the repository)
   a new `version.json` and skill zip. `version.json` — repository, branch, version number, note, sha1 of the files.
 - `scripts/blocks.py` — the block library (`S.block`); `blocks.py` — the list, `blocks.py show NAME` — a block alone.
