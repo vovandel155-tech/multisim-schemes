@@ -933,7 +933,7 @@ def _probe(b,name,kind,x,y,ref=None,g=9):
 Builder.probe=_probe
 
 def finalize(b,title,outpath,rename=False,hb=True,preview=True,netext=True,msext=True,sheet=SHEET,tmax=None,analyses=None,
-             params=None):
+             params=None,description=None):
     D=b.D; R=D.root
     P=R.find('Project')
     if sheet: set_sheet(R,*sheet)
@@ -973,6 +973,9 @@ def finalize(b,title,outpath,rename=False,hb=True,preview=True,netext=True,msext
                     for k in list(e): e.remove(k)
     net_names(b)
     instruments(b)
+    if description:
+        import describe
+        describe.put(R,description)
     if params:
         import analyses as AN
         AN.circuit_params(R,params,title)

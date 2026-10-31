@@ -141,7 +141,7 @@ TMAX=1e-5           # interactive simulation step, s (instead of «automatic» �
 class Scheme:
     def __init__(s,name,sheet_min=SHEET_MIN,margin=MARGIN_IN,outdir=None,tmax=TMAX):
         s.name=name; s.sheet_min=sheet_min; s.margin=margin; s.outdir=outdir or OUT; s.tmax=tmax
-        s.parts=[]; s.W=[]; s.cnt={}; s.probes=[]; s.batch=AN.Batch(); s.params={}
+        s.parts=[]; s.W=[]; s.cnt={}; s.probes=[]; s.batch=AN.Batch(); s.params={}; s.desc=None
     # ---------- description ----------
     def part(s,name,kind,pin,x,y,rot=0,mirror=False,value=None,label='auto',refdes=None,glob=None,subst=None):
         """element `kind` placed so that its pin `pin` lands in cell (x, y); label: 'auto' | right/left/top/bottom | None"""
@@ -201,6 +201,10 @@ class Scheme:
     def tran(s,*a,**k): s.batch.tran(*a,**k)
     def fourier(s,*a,**k): s.batch.fourier(*a,**k)
     def noise(s,*a,**k): s.batch.noise(*a,**k)
+    def description(s,markup):
+        """the circuit description (Tools → Description Box Editor) from simple markup — see describe.py:
+        # heading, ## subheading, paragraphs, - bullets, | table | rows |, **bold**, *italic*, R_{н}, 10^{-3}"""
+        s.desc=markup
     def param(s,name,value):
         """circuit parameter (Tools → Circuit parameters): a part uses it through subst, e.g. the amplitude of an
         AC source — part(..., subst={'.2':'Uin'}); swept by psweep()"""
@@ -243,7 +247,8 @@ class Scheme:
         b=s._build((ox,oy)); s.origin=(ox,oy)                     # 2nd pass — centered on a W×H sheet
         os.makedirs(s.outdir,exist_ok=True)
         out=os.path.join(s.outdir,s.name+'.ms14')
-        xml=finalize(b,s.name,out,rename=False,sheet=(W,H),tmax=s.tmax,analyses=s.batch.items,params=s.params)
+        xml=finalize(b,s.name,out,rename=False,sheet=(W,H),tmax=s.tmax,analyses=s.batch.items,params=s.params,
+                     description=s.desc)
         xp=os.path.join(CACHE,s.name+'_out.xml'); open(xp,'wb').write(xml)
         s.b=b; s.xml=xp; s.sheet=(W,H)
         print('== %s: sheet %d×%d inches, built in %.1f s → %s'%(s.name,W,H,time.time()-t0,os.path.relpath(out,REPO)))
