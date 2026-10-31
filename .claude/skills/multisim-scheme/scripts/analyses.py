@@ -179,11 +179,11 @@ def set_tran(t, tstop, tstart=0, tmax=None, ic=None):
 def set_fourier(a, freq, harmonics=9, tstop=None, tmax=None, ic=None, vscale=0, bars=None, normalized=None):
     """Fourier: fundamental `freq` Hz, `harmonics` harmonics, transient up to `tstop` s (default 10 periods),
     maximum step `tmax` s (None — Multisim calculates it); vscale — the graph scale index (0 linear),
-    bars — bar graph instead of a line (LineGraph 0), normalized — Normalize graphs"""
+    bars — bar graph instead of a line (LineGraph 1 — the flag is the bar graph checkbox), normalized — Normalize graphs"""
     tstop = tstop or 10.0 / freq
     _set(a, 'FundFreqSet', '1'); _set(a, 'FundFreq', '%g' % freq); _set(a, 'NumFreqs', str(harmonics))
     _set(a, 'TStop', '%g' % tstop); _set(a, 'Variation', str(vscale))
-    if bars is not None: _set(a, 'LineGraph', '0' if bars else '1')
+    if bars is not None: _set(a, 'LineGraph', '1' if bars else '0')
     if normalized is not None: _set(a, 'Normalized', '1' if normalized else '0')
     set_tran(a.get('Tran'), tstop, 0, tmax, ic)
 
