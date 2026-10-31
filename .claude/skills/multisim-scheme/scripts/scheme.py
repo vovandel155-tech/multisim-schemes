@@ -140,7 +140,7 @@ TMAX=1e-5           # interactive simulation step, s (instead of «automatic» �
 class Scheme:
     def __init__(s,name,sheet_min=SHEET_MIN,margin=MARGIN_IN,outdir=None,tmax=TMAX):
         s.name=name; s.sheet_min=sheet_min; s.margin=margin; s.outdir=outdir or OUT; s.tmax=tmax
-        s.parts=[]; s.W=[]; s.cnt={}; s.probes=[]; s.analyses=[]
+        s.parts=[]; s.W=[]; s.cnt={}; s.probes=[]; s.analyses=[]; s.params={}
     # ---------- description ----------
     def part(s,name,kind,pin,x,y,rot=0,mirror=False,value=None,label='auto',refdes=None,glob=None,subst=None):
         """element `kind` placed so that its pin `pin` lands in cell (x, y); label: 'auto' | right/left/top/bottom | None"""
@@ -220,6 +220,16 @@ class Scheme:
         s.analyses.append(dict(kind='NOISE',title=title,vars=list(variables or ['inoise_'+kind,'onoise_'+kind]),
                                opts=dict(source=source,output=output,ref=ref,fstart=fstart,fstop=fstop,points=points,
                                          spectrum=spectrum)))
+    def param(s,name,value):
+        """circuit parameter (Tools → Circuit parameters): a part uses it through subst, e.g. the amplitude of an
+        AC source — part(..., subst={'.2':'Uin'}); swept by psweep()"""
+        s.params[name]=value
+    def psweep(s,variables,param,values,tstop=1e-3,tstart=0,tmax=None,ic='auto_ic',title='Parameter Sweep'):
+        """add Parameter Sweep to Batched: circuit parameter `param` takes each of `values`; for each — Transient
+        from tstart to tstop s (maximum step tmax, initial conditions ic 'auto_ic' | 'dcop' | 'zero')"""
+        assert param in s.params,'define the circuit parameter first: S.param(%r, value)'%param
+        s.analyses.append(dict(kind='PSWEEP',title=title,vars=list(variables),
+                               opts=dict(param=param,values=list(values),current=s.params[param],tstop=tstop,tstart=tstart,tmax=tmax,ic=ic)))
     def wire(s,*pts):
         """wire: the first and last items are a terminal ('element','pin') or a junction J(x,y); in between — bends (x,y).
         3–4 wires at a junction; a junction with 2 wires becomes a bend."""
@@ -254,7 +264,7 @@ class Scheme:
         b=s._build((ox,oy)); s.origin=(ox,oy)                     # 2nd pass — centered on a W×H sheet
         os.makedirs(s.outdir,exist_ok=True)
         out=os.path.join(s.outdir,s.name+'.ms14')
-        xml=finalize(b,s.name,out,rename=False,sheet=(W,H),tmax=s.tmax,analyses=s.analyses)
+        xml=finalize(b,s.name,out,rename=False,sheet=(W,H),tmax=s.tmax,analyses=s.analyses,params=s.params)
         xp=os.path.join(CACHE,s.name+'_out.xml'); open(xp,'wb').write(xml)
         s.b=b; s.xml=xp; s.sheet=(W,H)
         print('== %s: sheet %d×%d inches, built in %.1f s → %s'%(s.name,W,H,time.time()-t0,os.path.relpath(out,REPO)))

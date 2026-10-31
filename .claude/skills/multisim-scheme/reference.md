@@ -137,9 +137,15 @@ A reference for changing the core (`scripts/msgen.py`) and for taking Multisim f
   (shown as `V(n)`), 4 — source current `vv1#branch` (`I(V1)`), 14 — expression (`$a-$b`, `db(...)`), 5–8 — noise outputs.
   Only the selected records are needed: Multisim fills in the rest when the dialog opens. Node names are the net names
   (`LocalName` of `CiNode`, lowercase in SPICE).
-- **Verified in Multisim 14.3**: `OP` (`S.op`), `PHASOR` (`S.phasor`). Written so far: `FOUR` (`S.fourier`), `NOISE`
-  (`S.noise`; reference node `$0` for ground is assumed), `AC` (`S.ac`; `vscale` 0–3 =
-  Linear, Logarithmic, Decibel, Octave — assumed from the dialog order, Decibel = 2 as in a real file).
+- **Verified in Multisim 14.3** (`gallery/demos/batched_all`): `OP` (`S.op`), `PHASOR` (`S.phasor`), `AC` (`S.ac`;
+  `vscale` 2 = Decibel; 0, 1, 3 = Linear, Logarithmic, Octave assumed from the dialog order), `FOUR` (`S.fourier`),
+  `NOISE` (`S.noise`; ground as the reference node is `$0`). Written so far: `PSWEEP` (`S.psweep`: a circuit parameter,
+  `SweepType` 3, `VarParamSweep.Variation` 3 = list of values, `AnalysisType` 2 = Transient).
+- **Circuit parameters** (`S.param`): `UniqueSheetGroups > SheetGroupInfo > CCircuitParamSheetGroupExtension >
+  CircuitParamData`: `CircuitParamNameList/CircuitParamName NameItem` and `CircuitParamValueList` with
+  `CircuitParamTreeInstanceGUIDPath` = `{CSheetComponent GUID}/{main DesignSheet SheetID}/` (the text path next to it
+  holds the file location — written with the file name only) and one `CircuitParamValue ValueItem` per name.
+  A component uses a parameter by its name in `CiaParamList/parameters` with `paramindicators` 0 (an expression).
 - **Results.** On opening, Multisim creates an empty `C:\Temp\NiCds\raw*.tmp` per Batched analysis (`RAWFILE_NAME`;
   the names change on every opening); Run fills them in SPICE raw format (text header, then `Values:` ASCII or
   `Binary:` little-endian doubles; complex = re, im pairs). Fourier tables are not written to raw — only Grapher has them

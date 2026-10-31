@@ -190,7 +190,50 @@ def set_noise(a, source, output, ref='0', fstart=20, fstop=20e3, points=100, swe
     _freq(a.get('FREQ_OPT'), fstart, fstop, points, sweep, vscale)
 
 
-SETTERS = {'OP': None, 'PHASOR': set_phasor, 'AC': set_ac, 'FOUR': set_fourier, 'NOISE': set_noise}
+PSWEEP_INNER = {'tran': '2'}   # Analysis to sweep -> AnalysisType (Transient = 2, as in a real file)
+
+
+def set_psweep(a, param, values, current=None, inner='tran', tstop=1e-3, tstart=0, tmax=None, ic='auto_ic'):
+    """Parameter Sweep of circuit parameter `param` over the list `values`; for each value the analysis `inner`
+    ('tran' — Transient from tstart to tstop s, maximum step tmax, initial conditions ic: 'auto_ic', 'dcop', 'zero')"""
+    assert inner in PSWEEP_INNER, inner
+    _set(a, 'SweepType', '3'); _set(a, 'AnalysisType', PSWEEP_INNER[inner])
+    v = a.get('VarParamSweep')
+    _set(v, 'Variation', '3')                                  # 3 — list of values
+    _set(v, 'Start', '%g' % values[0]); _set(v, 'Stop', '%g' % values[-1]); _set(v, 'NumItems', '1')
+    _set(v, 'List', [Node('-', '-', '%g' % x) for x in values])
+    _set(a, 'VariableParamToSweep', [Node('name', 'string', param.lower()), Node('value', 'string', '%g' % (values[0] if current is None else current)),
+                                      Node('paramtype', 'long', '4')])
+    t = a.get('Tran')
+    _set(t, 'TSTOP', '%g' % tstop); _set(t, 'TSTART', '%g' % tstart); _set(t, 'IC', ic)
+    if tmax:
+        m = t.get('TMAX'); m.type, m.value = 'double', '%g' % tmax
+
+
+def circuit_params(R, params, title):
+    """Circuit parameters (Tools → Circuit parameters) on the main sheet: {'Uin': 0.2}. A component parameter whose
+    value is a parameter name ('Uin' put in by `subst`) is marked as an expression (paramindicators = 0)."""
+    import xml.etree.ElementTree as ET
+    from msgen import enc
+    grp = next(g for g in R.iter('Group') if g.get('Class') == 'CSheetComponent')
+    sh = next(ds for ds in R.iter('DesignSheet') if ds.get('SheetID'))
+    data = next(R.iter('CCircuitParamSheetGroupExtension')).find('CircuitParamData')
+    names = data.find('CircuitParamNameList')
+    for k in params: ET.SubElement(names, 'CircuitParamName', {'NameItem': enc(k), 'CommentItem': ''})
+    from geom import dec
+    path = '/%s.ms14/%s.ms14//%s/%s/' % (title, title, dec(grp.get('SheetName')), dec(sh.get('PageName')))
+    vl = ET.SubElement(data, 'CircuitParamValueList', {'CircuitParamTreeInstancePath': enc(path),
+                       'CircuitParamTreeInstanceGUIDPath': '&ASC%s/%s/' % (grp.get('GUID'), sh.get('SheetID'))})
+    for v in params.values(): ET.SubElement(vl, 'CircuitParamValue', {'ValueItem': enc('%g' % v)})
+    keys = {enc(k) for k in params}
+    for pl in R.iter('CiaParamList'):
+        ps, ind = pl.find('parameters'), pl.find('paramindicators')
+        if ps is None or ind is None: continue
+        for k, it in enumerate(ps):
+            if it.get('Value') in keys: ind[k].set('Value', '0')
+
+
+SETTERS = {'OP': None, 'PSWEEP': set_psweep, 'PHASOR': set_phasor, 'AC': set_ac, 'FOUR': set_fourier, 'NOISE': set_noise}
 
 
 def add_batched(R, items):
