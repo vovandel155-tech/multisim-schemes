@@ -207,6 +207,19 @@ class Scheme:
         or in total ('lin'); vscale 'linear' | 'log' | 'db' | 'octave' — the vertical scale of the graph"""
         s.analyses.append(dict(kind='AC',title=title,vars=list(variables),
                                opts=dict(fstart=fstart,fstop=fstop,points=points,sweep=sweep,vscale=vscale)))
+    def fourier(s,variables,freq=1000,harmonics=9,tstop=None,tmax=None,title='Fourier'):
+        """add Fourier to Batched: harmonics of `freq` Hz (and THD) after a transient of `tstop` s
+        (default 10 periods) with maximum step `tmax` s (None — calculated by Multisim)"""
+        s.analyses.append(dict(kind='FOUR',title=title,vars=list(variables),
+                               opts=dict(freq=freq,harmonics=harmonics,tstop=tstop,tmax=tmax)))
+    def noise(s,source,output,ref='0',fstart=20,fstop=20e3,points=100,spectrum=False,variables=None,title='Noise'):
+        """add Noise to Batched: input-referred to source `source` (its name, e.g. 'VIN'), output between nets
+        `output` and `ref` ('0' — ground), fstart..fstop Hz. spectrum=False — integrated noise (inoise_total,
+        onoise_total), True — spectral density (inoise_spectrum, onoise_spectrum)"""
+        kind='spectrum' if spectrum else 'total'
+        s.analyses.append(dict(kind='NOISE',title=title,vars=list(variables or ['inoise_'+kind,'onoise_'+kind]),
+                               opts=dict(source=source,output=output,ref=ref,fstart=fstart,fstop=fstop,points=points,
+                                         spectrum=spectrum)))
     def wire(s,*pts):
         """wire: the first and last items are a terminal ('element','pin') or a junction J(x,y); in between — bends (x,y).
         3–4 wires at a junction; a junction with 2 wires becomes a bend."""

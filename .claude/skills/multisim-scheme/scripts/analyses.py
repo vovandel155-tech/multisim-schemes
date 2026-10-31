@@ -98,6 +98,7 @@ def text(s):
 
 # variable record in NODES > Nodes: GROUP 768 marks "Selected variables for analysis"
 SELECTED = '768'
+NOISE_VARS = {'inoise_spectrum': '5', 'onoise_total': '6', 'onoise_spectrum': '7', 'inoise_total': '8'}
 VAR_TYPES = {'3': 'V', '4': 'I', '14': 'expr', '5': 'noise', '6': 'noise', '7': 'noise', '8': 'noise'}
 
 
@@ -126,6 +127,7 @@ def var_record(expr):
     name = re.sub(r'\bV\(\s*([\w:]+)\s*\)', lambda m: '$' + m.group(1).lower(), name, flags=re.I)
     if re.fullmatch(r'\$[\w:]+', name): typ = '3'
     elif re.fullmatch(r'vv\w+#branch', name): typ = '4'
+    elif name in NOISE_VARS: typ = NOISE_VARS[name]
     else: typ = '14'
     return Node('NODE', 'list', [Node('GROUP', 'long', SELECTED), Node('PLOTDEVICETYPE', 'long', '0'),
                                  Node('TYPE', 'long', typ), Node('NAME', 'string', name),
@@ -160,7 +162,35 @@ def set_ac(a, fstart, fstop, points=100, sweep='dec', vscale='db'):
     hr[0].value, hr[1].value = '%g' % fstart, '%g' % fstop
 
 
-SETTERS = {'OP': None, 'PHASOR': set_phasor, 'AC': set_ac}
+def _freq(f, fstart, fstop, points, sweep, vscale):
+    """FREQ_OPT-style block (AC Sweep, Noise): sweep, points, range, vertical scale, graph range (hrange pair)"""
+    set_ac(f, fstart, fstop, points, sweep, vscale)
+
+
+def set_fourier(a, freq, harmonics=9, tstop=None, tmax=None, vscale=0):
+    """Fourier: fundamental `freq` Hz, `harmonics` harmonics, transient up to `tstop` s (default 10 periods),
+    maximum step `tmax` s (None — Multisim calculates it); vscale — the graph scale index (0 linear)"""
+    tstop = tstop or 10.0 / freq
+    _set(a, 'FundFreqSet', '1'); _set(a, 'FundFreq', '%g' % freq); _set(a, 'NumFreqs', str(harmonics))
+    _set(a, 'TStop', '%g' % tstop); _set(a, 'Variation', str(vscale))
+    t = a.get('Tran')
+    _set(t, 'TSTOP', '%g' % tstop)
+    if tmax:
+        m = t.get('TMAX'); m.type, m.value = 'double', '%g' % tmax
+
+
+def set_noise(a, source, output, ref='0', fstart=20, fstop=20e3, points=100, sweep='dec', vscale='log',
+              spectrum=False):
+    """Noise: input-referred to source `source` (RefDes, e.g. 'VIN'), output voltage between nodes `output` and `ref`
+    (net names, '0' — ground); spectrum=False — integrated noise over the range (inoise_total, onoise_total),
+    True — spectral density at every point (inoise_spectrum, onoise_spectrum)"""
+    _set(a, 'InputRefSource', 'v' + source.lower()); _set(a, 'OutputNode', '$' + str(output).lower())
+    _set(a, 'ReferenceNode', '$' + str(ref).lower())
+    _set(a, 'SetPointsPerSummary', '1' if spectrum else '0')
+    _freq(a.get('FREQ_OPT'), fstart, fstop, points, sweep, vscale)
+
+
+SETTERS = {'OP': None, 'PHASOR': set_phasor, 'AC': set_ac, 'FOUR': set_fourier, 'NOISE': set_noise}
 
 
 def add_batched(R, items):

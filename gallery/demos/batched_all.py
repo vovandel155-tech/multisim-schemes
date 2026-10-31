@@ -1,8 +1,8 @@
 import sys, os; GALLERY=os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0,os.path.join(GALLERY,'..','..','.claude','skills','multisim-scheme','scripts'))
 from scheme import *
-# Analyses: AC Sweep in Batched (Simulate → Analyses and Simulation → Batched → Run).
+# Analyses: a full Batched list (Simulate → Analyses and Simulation → Batched → Run).
 # The batched_phasor stage with C1 1u at the input (low cut-off) and CL 10n on the collector (high cut-off).
-S=Scheme('batched_ac',outdir=GALLERY)
+S=Scheme('batched_all',outdir=GALLERY)
 P=S.part
 P('V1','DC_POWER','1',0,10)                         # 1 «+» (0,10), 2 «−» (0,14)
 P('VIN','AC_VOLTAGE','1',8,19)                      # 1 (8,19), 2 (8,25)
@@ -20,8 +20,17 @@ S.wires([
  [('V1','2'),(0,31),J(8,31)],[('VIN','2'),J(8,31)],[J(8,31),J(16,31)],
  [('R2','2'),J(16,31)],[J(16,31),g],[J(16,31),J(28,31)],[J(28,31),('RE','2')],[J(28,31),(40,31),('CL','2')],
 ])
-# nets of this build: 2 — input (VIN +, AC magnitude 1 V), 4 — collector (output). V(4) is the gain itself.
-# Expected (ngspice, 1 Hz…10 MHz, 100 points/decade, 701 points): maximum 6.57 dB near 380 Hz, 6.51 dB at 1 kHz,
-# −3 dB at 20.3 Hz (C1 with the input resistance) and 7.29 kHz (CL with RC). Vertical scale — Decibel.
-S.ac(['V(4)'],fstart=1,fstop=10e6,points=100,vscale='db',title='Frequency response')
+# nets of this build: 1 — V1+, 2 — input (VIN +, AC magnitude 1 V, 0.2 Vpk 1 kHz sine), 3 — base, 4 — collector
+# (output), 5 — emitter. Expected (ngspice):
+#  1: V(1) 12, V(2) 0, V(3) 2.039, V(4) 8.913, V(5) 1.411, V(4)-V(5) 7.502 V, I(V1) −1.615 mA;
+#  2: |V(4)| = gain 2.117 (6.515 dB), |V(2)/I(VIN)| 7.825 kOhm;
+#  3: maximum 6.57 dB near 380 Hz, −3 dB at 20.3 Hz and 7.29 kHz, 701 points;
+#  4: DC 8.914 V, 1st harmonic 0.423 V (VIN 0.2 Vpk), THD ≈ 0.035 %;
+#  5: inoise_total 0.751 uV, onoise_total 1.067 uV (20 Hz…20 kHz); 6: the same as spectral density, 301 points.
+S.op(['V(1)','V(2)','V(3)','V(4)','V(5)','V(4)-V(5)','I(V1)'],title='1 Operating point')
+S.phasor(['V(4)','V(4)/V(2)','db(V(4)/V(2))','V(2)/I(VIN)'],freq=1000,title='2 Gain at 1 kHz')
+S.ac(['V(4)'],fstart=1,fstop=10e6,points=100,vscale='db',title='3 Frequency response')
+S.fourier(['V(4)'],freq=1000,harmonics=9,tstop=0.05,tmax=1e-6,title='4 Harmonics')
+S.noise('VIN',4,0,fstart=20,fstop=20e3,points=100,title='5 Total noise')
+S.noise('VIN',4,0,fstart=20,fstop=20e3,points=100,spectrum=True,title='6 Noise spectrum')
 S.build()
