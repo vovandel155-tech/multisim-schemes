@@ -48,6 +48,9 @@ Inputs are switches to VCC/ground (press the key shown on the switch), the outpu
 | [FZT1049A switch](demos/fzt1049a_switch.py) · [.ms14](demos/fzt1049a_switch.ms14) | a part obtained from a claude.ai chat | <img src="images/fzt1049a_switch.png" width="260"> |
 | [Blocks: AND + LED](demos/blocks_and_led.py) · [.ms14](demos/blocks_and_led.ms14) | a circuit made of library blocks | <img src="images/blocks_and_led.png" width="260"> |
 | [Sources](demos/catalog_sources.py) · [.ms14](demos/catalog_sources.ms14) | AC source, interactive DC source turned upside down | <img src="images/catalog_sources.png" width="260"> |
+| [Batched: operating point](demos/batched_op.py) · [.ms14](demos/batched_op.ms14) | DC Operating Point in Batched: node voltages, an expression, the supply current | <img src="images/batched_op.png" width="260"> |
+| [Batched: gain](demos/batched_phasor.py) · [.ms14](demos/batched_phasor.ms14) | Single Frequency AC: gain, gain in dB, input impedance | <img src="images/batched_phasor.png" width="260"> |
+| [Batched: all analyses](demos/batched_all.py) · [.ms14](demos/batched_all.ms14) | one Run: operating point, gain, frequency response, Fourier/THD, noise, parameter sweep of the input amplitude | <img src="images/batched_all.png" width="260"> |
 
 ## Experimental
 

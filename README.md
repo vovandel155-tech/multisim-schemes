@@ -33,6 +33,10 @@ follows the picture: the same element positions, the same wire routing, one comm
   voltage, current, power, digital and differential probes.
 - **Special symbols:** Schottky transistors with the textbook «hooks», multi-emitter TTL transistors, MOSFETs with a
   substrate pin — as Multisim subcircuits that look exactly like the figure.
+- **Analyses one Run away:** the skill writes a Batched list into the file — operating point, gain at one frequency,
+  frequency response, transient, Fourier/THD, noise, parameter sweep over circuit parameters — with the variables and
+  expressions you need; it can also set up the analyses of a circuit you already have. Results matched ngspice to
+  4–5 digits.
 - **A library of ready blocks:** CMOS inverter, 2-input NAND/NOR, CMOS input protection, transistor switch, push-pull
   follower, divider, RC filters, LED with a resistor — one line each, in any of 8 orientations.
 - **Checks before you ever open Multisim:** wire overlaps, wires through pins or bodies, label collisions, a PNG
@@ -88,9 +92,9 @@ format and the internals; [`SKILL.md`](.claude/skills/multisim-scheme/SKILL.md) 
 
 ## Gallery
 
-[`gallery/`](gallery/) holds 26 verified circuits with their scripts and ready `.ms14` files:
+[`gallery/`](gallery/) holds 29 verified circuits with their scripts and ready `.ms14` files:
 18 classic TTL and CMOS gates (SN7400, SN74LS00, SN74ALS00, CD4001B, CD4011B, MC14016B…) drawn exactly as in a
-digital electronics textbook, and demos of catalog parts, instruments, probes and blocks.
+digital electronics textbook, and demos of catalog parts, instruments, probes, blocks and Batched analyses.
 
 ## Repository layout
 

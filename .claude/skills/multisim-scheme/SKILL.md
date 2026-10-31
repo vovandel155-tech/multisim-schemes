@@ -1,6 +1,6 @@
 ---
 name: multisim-scheme
-description: Builds NI Multisim 14 schematics (.ms14 files) programmatically that open without any dialogs and simulate right away — from a picture, a screenshot or a description, with the layout of the picture. Any part of the Multisim database by name (transistors, op-amps, diodes, LEDs, ICs, sources) from a catalog of real parts; missing parts are extracted from Multisim itself on the user's PC with one .bat file. Instruments (multimeter, oscilloscope, function generator, Bode plotter, counter…) and probes; subcircuits (Schottky, multi-emitter transistors), CMOS with substrate pins; a library of ready blocks. Checks: overlaps, PNG preview, ngspice (truth table or signal swing). Use when the user asks to draw/build/generate a Multisim circuit or a .ms14 file, sends a schematic image to rebuild in Multisim, or asks to unpack/inspect a .ms14 file — in any language.
+description: Builds NI Multisim 14 schematics (.ms14 files) programmatically that open without any dialogs and simulate right away — from a picture, a screenshot or a description, with the layout of the picture. Any part of the Multisim database by name (transistors, op-amps, diodes, LEDs, ICs, sources) from a catalog of real parts; missing parts are extracted from Multisim itself on the user's PC with one .bat file. Instruments (multimeter, oscilloscope, function generator, Bode plotter, counter…) and probes; analyses written into the file — a Batched list (operating point, single-frequency AC, AC sweep, transient, Fourier, noise, parameter sweep over circuit parameters) that runs with one Run, also set up in an existing .ms14; subcircuits (Schottky, multi-emitter transistors), CMOS with substrate pins; a library of ready blocks. Checks: overlaps, PNG preview, ngspice (truth table or signal swing). Use when the user asks to draw/build/generate a Multisim circuit or a .ms14 file, to set up analyses (Batched) in a circuit, sends a schematic image to rebuild in Multisim, or asks to unpack/inspect a .ms14 file — in any language.
 ---
 
 # NI Multisim schematics (.ms14) from Python
@@ -185,6 +185,34 @@ horizontal 3, vertical 5, pin 0), `CiProbeExtComp` in the `ProbeExts` list and a
 No wire in the cell — a build error. In the preview — a green diamond with the name. Probes are skipped in ngspice.
 The overlap check does not look at probe labels yet — keep probes away from element labels.
 
+## Analyses (Batched) — `scripts/analyses.py`
+Simulate → Analyses and Simulation → **Batched**: a list of analyses saved in the file; the user presses **Run** and
+gets one Grapher page per analysis (its title is the page name). The skill writes the list; Batched becomes the
+active analysis. Variables — as in the Output tab: `'V(2)'`, `'V(outl)-V(outr)'`, `'I(V1)'`, `'db(V(4)/V(2))'`,
+`'(V(a)-V(b))^2/8'`; nets are the net names (the numbers the `build()` report prints, or the names in the file).
+- `S.op(vars, title=)` — DC Operating Point.
+- `S.phasor(vars, freq=1000, fmt='magph'|'reim', title=)` — Single Frequency AC. Sources take their
+  «AC analysis magnitude» (1 V for `AC_VOLTAGE`), not the amplitude on the label.
+- `S.ac(vars, fstart=1, fstop=10e6, points=100, sweep='dec'|'oct'|'lin', vscale='db'|'linear'|'log'|'octave', title=)` — AC Sweep.
+- `S.tran(vars, tstop, tstart=0, tmax=None, ic='auto_ic'|'dcop'|'zero', title=)` — Transient.
+- `S.fourier(vars, freq=1000, harmonics=9, tstop=None, tmax=None, ic=None, vscale=0|1, bars=None, normalized=None, title=)` —
+  Fourier (table of harmonics and THD). `vscale=1` — Logarithmic: harmonics 100× smaller stay visible; keep the line
+  graph there (`bars=True` on a log scale makes every bar look the same).
+- `S.noise('VIN', output, ref='0', fstart=20, fstop=20e3, points=100, spectrum=False, title=)` — Noise referred to source
+  `VIN`, output between nets `output` and `ref`; `spectrum=False` — inoise_total/onoise_total, `True` — spectral density.
+- `S.param('Uin', 0.2)` — a circuit parameter (Tools → Circuit parameters); a part uses it through
+  `subst={'.2':'Uin','UinVpk':'Uin'}` (value and label). `S.psweep(vars, 'Uin', [0.1, 0.2, 0.5], tstart=, tstop=, tmax=, ic=, title=)` —
+  Parameter Sweep over it, a Transient for every value, all traces on one plot.
+- Every method takes `max_points=` (Analysis options → Maximum number of points; raise to 1000000 for long transients
+  with a small step).
+- **An existing file** (the user's own circuit): `B = analyses.Batch()`, the same methods (`B.op(...)`, `B.noise(...)`,
+  `B.psweep(..., current=value)`), then `analyses.rewrite('in.ms14', 'out.ms14', B)` — replaces the Batched list and
+  leaves the circuit untouched. `python3 scripts/analyses.py file.ms14` lists the Batched analyses of any file.
+- **Expected values:** compute them in ngspice before sending the file (`spice.emit` gives the netlist; `op`, `ac`,
+  `tran` + `fourier`, `noise v(out) vsrc dec N f1 f2`) — the user compares them with Grapher.
+- Verified in Multisim 14.3: all of the above (`gallery/demos/batched_op`, `batched_phasor`, `batched_all`, and a real
+  coursework circuit rewritten by `rewrite`).
+
 ## Rules (found by checking in Multisim — do not break them)
 - **Compress only with `blast.write_ms2()`** (a real PKWARE implode). Multisim does not open a literal-only file.
 - **Read and write XML only via `msgen.Doc` / `msgen.serialize`.** They keep line breaks inside attributes; without them Multisim silently refuses the file.
@@ -269,6 +297,7 @@ Without the last two the file is still built, and the report says what is missin
 - `scripts/blast.py` — unpacking and compressing .ms14 (`read_ms`, `write_ms2`); `python3 scripts/blast.py f.ms14 f.xml`.
 - `scripts/geom.py`, `scripts/render.py`, `scripts/validate.py` — geometry, PNG preview, ID reference check.
 - `scripts/spice.py` — netlist from the file and the check in ngspice.
+- `scripts/analyses.py` — analyses in the file (Batched): reading, writing, `Batch`, `rewrite`; the format is in `reference.md`.
 - `scripts/update.py` — self-update from GitHub (step 0); `update.py --release --note TEXT --zip PATH` — (in the repository)
   a new `version.json` and skill zip. `version.json` — repository, branch, version number, note, sha1 of the files.
 - `scripts/blocks.py` — the block library (`S.block`); `blocks.py` — the list, `blocks.py show NAME` — a block alone.

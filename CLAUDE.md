@@ -21,7 +21,7 @@ files, packaged as a Claude skill (`.claude/skills/multisim-scheme/`), plus a ga
 
 ## Layout
 - `.claude/skills/multisim-scheme/` — the skill: `SKILL.md` (manual and API), `scripts/` (`scheme.py` API, `msgen.py`
-  core, `blast.py` compression, `blocks.py` block library, `registry.py`/`harvest.py` part catalog, `spice.py` ngspice
+  core, `blast.py` compression, `blocks.py` block library, `analyses.py` analyses (Batched), `registry.py`/`harvest.py` part catalog, `spice.py` ngspice
   check, `update.py` self-update and release), `samples/` (Multisim-saved sample files), `samples/ni/` (part catalog:
   `catalog.json`, `catalog.txt`, `parts.bin` + `parts.idx`), `examples/`, `reference.md` (file format and internals).
 - `gallery/` — verified circuits (`ttl/`, `cmos/`, `demos/`, each script writes its `.ms14` next to itself) and preview
@@ -35,7 +35,10 @@ files, packaged as a Claude skill (`.claude/skills/multisim-scheme/`), plus a ga
    `.msgen/preview/<name>_zoom.png` (look at it), the ngspice function.
 3. **Regression after any core change:** rebuild every `gallery/{ttl,cmos,demos}/*.py` and compare sha1 with the
    committed files — the build is deterministic, files must match byte for byte (or explain every difference).
-4. **Release after any skill change:**
+4. **Branches.** `main` is what users get (claude.ai copies of the skill update themselves from it), so work happens in a
+   development branch (e.g. `dev/analyses`); the owner checks the files from that branch in Multisim; only verified work
+   is merged into `main`, followed by a release.
+5. **Release after any skill change:**
    `python3 .claude/skills/multisim-scheme/scripts/update.py --release --note "what changed" --zip multisim-scheme.zip`
    and commit `version.json` + the zip together. claude.ai copies of the skill update themselves from `main`
    (`version.json`: repo, branch `main`, path) — a change reaches users only when it is on `main`.
