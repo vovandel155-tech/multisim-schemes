@@ -63,7 +63,9 @@ Run from the project folder: `python3 my_scheme.py`. The result is `output/<name
 4. **Run it and read the report:**
    - nets — compare with the source scheme;
    - `ID references: OK`;
-   - `overlaps: none` — otherwise fix them, see «What the warnings mean»;
+   - `overlaps: none` — otherwise fix them, see «What the warnings mean»; **never send a file with overlaps** and
+     never call them «cosmetic»: the user hands the circuit in as it is;
+   - `supply: VCC = … V` — the voltage the circuit will really have in Multisim (5 V unless `vcc(..., volts=)`);
    - preview `.msgen/preview/<name>_zoom.png` — always look at it;
    - the truth table and the function name from ngspice (with a sine source — peak-to-peak and mean on the multimeter).
 5. **Give the file to the user** to check in Multisim. New schemes one at a time: each check may reveal a rule worth keeping.
@@ -116,8 +118,9 @@ file but the block of the part (`samples/ni/parts.bin` + `parts.idx`, `msgen.Par
 - **Value:** `value='10k'` for parts with a value (resistor, capacitor…). Parameters without a value (source amplitude
   etc.) — `subst={'.2':'10'}`: values equal to the old one (numerically too) and the start of the value label are replaced.
 - **Power sources** (verified in the netlist and on the label):
-  - positive — `S.vcc(x, y, volts=15)` (all VCC of a scheme are one net) or `DC_POWER` with `subst={'12':'15'}` (a separate
-    source, pins 1 «+» and 2 «−»);
+  - positive — `S.vcc(x, y, volts=15)` (all VCC of a scheme are one net; **without `volts` it is 5 V** — pass it on every
+    circuit that needs another supply, the report line `supply:` shows what the file has) or `DC_POWER` with
+    `subst={'12':'15'}` (a separate source, pins 1 «+» and 2 «−»; its current `I(V1)` is available to analyses);
   - negative rail — `VEE` (`S.part('VEE1','VEE','VEE',x,y,rot=180,refdes='VEE',subst={'-15':'-5'})`; the catalog donor
     defaults to −15 V) or `DC_POWER` with its plus to ground;
   - **do not use `DC_INTERACTIVE_VOLTAGE` for a fixed supply**: it is a source with a slider (key A, voltage =
@@ -208,8 +211,16 @@ active analysis. Variables — as in the Output tab: `'V(2)'`, `'V(outl)-V(outr)
 - **An existing file** (the user's own circuit): `B = analyses.Batch()`, the same methods (`B.op(...)`, `B.noise(...)`,
   `B.psweep(..., current=value)`), then `analyses.rewrite('in.ms14', 'out.ms14', B)` — replaces the Batched list and
   leaves the circuit untouched. `python3 scripts/analyses.py file.ms14` lists the Batched analyses of any file.
-- **Expected values:** compute them in ngspice before sending the file (`spice.emit` gives the netlist; `op`, `ac`,
-  `tran` + `fourier`, `noise v(out) vsrc dec N f1 f2`) — the user compares them with Grapher.
+- **Expected values — only from the built file:** `spice.run('out.ms14', 'op; print v(4) i(vv1); ac lin 1 1k 1k; …')`
+  (or `python3 scripts/spice.py out.ms14 "op; print all"`) runs ngspice on the netlist of the file itself: its real VCC,
+  parts, models and circuit parameters (`params={'Uin': 0.5}` overrides one). **Never** compute the numbers for the user
+  from a netlist written by hand — a model once reported 19.5 V results for a file that had the default 5 V supply.
+  Commands: `op`, `ac lin 1 1k 1k`, `ac dec 100 1 10meg`, `tran 1u 50m 0 1u` + `fourier 1k v(a,b)`,
+  `noise v(a,b) vvin dec 100 20 20k` (`print inoise_total onoise_total` after `setplot noise2`). The user compares them
+  with Grapher; the same numbers go into the description.
+- **Supply current in the results** needs a source with a branch: `DC_POWER` (`I(V1)`), not the `VCC` symbol.
+- **Steps:** Fourier — `tmax` ≤ 1/(100·harmonics·f) (1 us for 1 kHz and 9 harmonics; smaller for THD below 0.1 %);
+  AC Sweep — 100 points per decade, so the −3 dB frequencies come out accurate.
 - Verified in Multisim 14.3: all of the above (`gallery/demos/batched_op`, `batched_phasor`, `batched_all`, and a real
   coursework circuit rewritten by `rewrite`).
 
@@ -219,10 +230,12 @@ Tools → Description Box Editor: a formatted text saved in the file (in the Des
 - `S.description(markup)` for a new circuit; `describe.rewrite('in.ms14', 'out.ms14', markup)` replaces the description
   of an existing file, `append=True` adds to its end (the old text and pictures stay).
 - Markup (as in Markdown): consecutive lines make one paragraph, a blank line starts a new one; `# Heading` (bold),
-  `## Subheading` (bold italic), `- bullet`, `| table | rows |` (a `|---|---|` row after the first makes it a bold
+  `## Subheading` (bold italic), `###`/`####` (italic), `- bullet`, `| table | rows |` (a `|---|---|` row after the first makes it a bold
   header), `**bold**`, `*italic*`, `R_{н}` subscript, `10^{-3}` superscript,
   `![Рисунок 1 — Схема](file.png){width=12}` — a centered PNG/JPEG picture with its caption, width in cm (default:
   the text width at most). Body text: Times New Roman 14, first-line indent 1.25 cm, justified (Russian coursework style).
+- **The description describes this file:** the parts, values and supply that are in it, numbers from `spice.run` on it;
+  nothing from an earlier variant or from another netlist.
 - **Before putting pictures in, ask the user** which ones they want: graphs computed by the skill in ngspice (plotted
   with matplotlib — ready at once, but they are not Multisim's own windows) or their own screenshots from Multisim
   (Grapher, the circuit — what a teacher expects to see; ask them to send the files). Mixing is fine. The circuit

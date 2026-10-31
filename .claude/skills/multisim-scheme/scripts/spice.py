@@ -3,7 +3,8 @@ Multisim will see). Logic: switches S* are enumerated, the output is the voltage
 table). With a sine source (VSIN) — transient analysis: peak-to-peak and DC component on the multimeter.
 Subcircuits (project sheets) → .subckt; bipolar (C/B/E) and MOS (D/G/S/SUB) transistors, diodes, resistors; elements
 without a sample (SpiceLib) — by their template, expanded the way Multisim does it.
-python3 scripts/spice.py .msgen/<name>_out.xml"""
+python3 scripts/spice.py .msgen/<name>_out.xml
+python3 scripts/spice.py FILE.ms14 "op; print all"     # any analyses on a built file (run())"""
 import sys, os, re, subprocess, itertools, tempfile
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 from msgen import *
@@ -83,8 +84,8 @@ def expand(tp,nm,node,c,mname):
 # but ngspice reads «a» as the atto prefix (1e-18) — an op-amp without bias current stays silent. Strip the letter from number tokens.
 AMPS=re.compile(r'(?<![\w.])(\d[\d.]*(?:[eE][-+]?\d+)?)[aA](?=[\s)]|$)')
 
-def netlist(D,sw,title='scheme',tran=None):
-    """sw: {'S1':1,...} — 1: common pin 2 to pin 1 (VCC), 0: to pin 3 (ground). Returns (text, output node).
+def deck(D,sw={},title='scheme'):
+    """the circuit part of the netlist (no analyses): (lines, multimeter nodes or None). VCC — from the file's symbol.
     Subcircuits (other project sheets, CIITHierDoc) — .subckt by sheet name; pins — hierarchical connectors."""
     models={}; subs=[]; subports={}
     for h in D.root.iter('CIITHierDoc'):
@@ -100,6 +101,11 @@ def netlist(D,sw,title='scheme',tran=None):
     lines=['* '+title,'Vcc VCC 0 dc %g'%vcc[0]]+subs+lines+list(models.values())
     lines=[AMPS.sub(r'\1',l) for l in lines]
     if any(re.search(r'\bpi\b',l) for l in lines): lines.insert(1,'.param pi=3.14159265358979')   # Multisim op-amp models: {2*pi*…}
+    return lines,out
+
+def netlist(D,sw,title='scheme',tran=None):
+    """sw: {'S1':1,...} — 1: common pin 2 to pin 1 (VCC), 0: to pin 3 (ground). Returns (text, output node)."""
+    lines,out=deck(D,sw,title)
     if tran:   # peak-to-peak and mean on the multimeter over the last 10 ms
         a,b=out; v='v(%s)'%a+('-v(%s)'%b if b!='0' else '')
         lines+=['.control','tran %g %g'%(tran[0],tran[1]),'let vo=%s'%v,
@@ -108,6 +114,31 @@ def netlist(D,sw,title='scheme',tran=None):
     else:
         lines+=['.control','op','print v(%s)'%out[0],'.endc','.end']
     return '\n'.join(lines)+'\n',out
+
+def run(path,commands,params=None,show=False):
+    """expected values for a built file: ngspice `commands` (a list or a ';'-separated string of .control lines:
+    'op', 'print v(4) i(vv1)', 'ac lin 1 1k 1k', 'tran 1u 50m', 'fourier 1k v(4)', 'noise v(4) vvin dec 100 20 20k') on
+    the netlist of the .ms14 (or unpacked .xml) file itself — its real VCC, parts, models and circuit parameters.
+    Never compute the values the user will compare with Multisim from a netlist written by hand.
+    params — override circuit parameters, e.g. {'Uin': 0.5}. Returns ngspice's output."""
+    import blast
+    raw=blast.read_ms(path) if path.endswith('.ms14') else open(path,'rb').read()
+    D=Doc(raw); x=raw.decode('latin1')
+    lines,_=deck(D,{},os.path.basename(path))
+    names=[dec('&'+n) for n in re.findall(r'<CircuitParamName NameItem="&amp;([^"]*)"',x)]
+    vals=[dec('&'+v) for v in re.findall(r'<CircuitParamValue ValueItem="&amp;([^"]*)"',x)]
+    cp=dict(zip(names,vals)); cp.update({k:'%g'%v for k,v in (params or {}).items()})
+    if cp:       # a part parameter that is a circuit parameter name becomes {name}
+        rx=re.compile(r'(?<![\w{])(%s)(?![\w}])'%'|'.join(map(re.escape,cp)))
+        lines=[lines[0]]+['.param %s=%s'%kv for kv in cp.items()]+[l if l.startswith(('*','.')) else rx.sub(r'{\1}',l) for l in lines[1:]]
+    if isinstance(commands,str): commands=[c.strip() for c in commands.split(';') if c.strip()]
+    text='\n'.join(lines+['.control']+list(commands)+['.endc','.end'])+'\n'
+    with tempfile.NamedTemporaryFile('w',suffix='.cir',delete=False) as f: f.write(text)
+    r=subprocess.run(['ngspice','-b',f.name],capture_output=True,text=True)
+    os.unlink(f.name)
+    out=r.stdout+r.stderr
+    if show: print(out)
+    return out
 
 FUNCS={1:{'NOT':lambda st:int(not st[0]),'BUFFER':lambda st:int(st[0])},
        2:{'NAND':lambda st:int(not all(st)),'NOR':lambda st:int(not any(st)),'AND':lambda st:int(all(st)),
@@ -156,5 +187,6 @@ def analyze_tran(D,path,srcs,verbose=True,t=(5e-6,40e-3)):
     return dict(inputs=[],table={},func='amplifier, gain %.1f'%(pp/2/float(amp)),tran=val)
 
 if __name__=='__main__':
+    if len(sys.argv)>2: run(sys.argv[1],sys.argv[2],show=True); sys.exit()
     r=analyze(sys.argv[1])
     print('Function:',r['func'] if r else 'no S* switches or XMM1 multimeter')

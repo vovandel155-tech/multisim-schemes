@@ -253,6 +253,12 @@ class Scheme:
         s.b=b; s.xml=xp; s.sheet=(W,H)
         print('== %s: sheet %d×%d inches, built in %.1f s → %s'%(s.name,W,H,time.time()-t0,os.path.relpath(out,REPO)))
         for n in b.nets: print('   net %-4s'%n['name'],', '.join('%s.%s'%(m[0],dec_pin(m[1])) for m in sorted(n['mem']) if m[0]!='J'))
+        vc=[p for p in s.parts if p['kind']=='VCC']
+        if vc:     # the supply: a default 5 V once went unnoticed under a 19.5 V design
+            v=vc[0]['value']
+            print('   supply: VCC = %s V%s'%(v or 5,'' if v else '  ← the default; pass vcc(..., volts=) if the circuit needs another'))
+        for p in s.parts:
+            if p['kind']=='DC_POWER': print('   supply: %s DC_POWER %s'%(p['name'],'12 V (catalog default)' if not p['subst'] else 'subst %s'%p['subst']))
         for p in s.parts:
             if p['kind'] in REG:
                 e=REG[p['kind']]; print('   from catalog: %-5s %s ← %s (%s, Multisim %s)'%(p['name'],e['key'],os.path.basename(e['path']),e['refdes'],e['multisim']))

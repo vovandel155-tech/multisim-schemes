@@ -5,7 +5,7 @@ document (RichEdit), base64 in lines of 60 characters separated by CR LF, the RT
 
 Markup (as in Markdown): consecutive text lines make one paragraph, a blank line starts a new one;
 headings, bullet items and table rows take one line each:
-    # Heading               ## Subheading
+    # Heading               ## Subheading            ### Sub-subheading (#### too)
     a paragraph …           - a bullet item
     | a | table | row |     (a row of dashes |---|---| after the first row makes it bold)
     ![Figure 1 — caption](picture.png){width=12}    a centered PNG/JPEG picture with its caption below;
@@ -126,14 +126,14 @@ def rtf(markup):
         if s.startswith('|'):
             flush(); table.append(s.strip('|').split('|')); continue
         if table: body.append(_table(table)); table = []
-        m = re.match(r'(#{1,2})\s+(.*)', s)
+        m = re.match(r'(#{1,4})\s+(.*)', s)
         pic = PICTURE.match(s)
         if not s: flush()
         elif pic:
             flush(); body.append(_picture(pic.group(2), pic.group(1), pic.group(3), fs))
         elif m:
             flush()
-            style = r'\b' if len(m.group(1)) == 1 else r'\b\i'            # # — bold, ## — bold italic
+            style = {1: r'\b', 2: r'\b\i'}.get(len(m.group(1)), r'\i')    # # bold, ## bold italic, ### #### italic
             body.append(r'\pard\keepn\widctlpar\fi%d\sb240\sa120\qj%s\fs%d %s\b0\i0\par' % (INDENT, style, fs, _inline(m.group(2)))
                         + '\r\n')
         elif re.match(r'[-•]\s+', s):
