@@ -124,3 +124,29 @@ A reference for changing the core (`scripts/msgen.py`) and for taking Multisim f
   [offset, length]); not zip/gzip — the claude.ai uploader accepts at most 200 files and no archives inside the archive; `msgen.PartPack.bundle()` returns the same as `Doc.bundle()` of the donor. `--keep` leaves the existing blocks
   as they are and adds only new keys; a catalog of the old layout (whole donors) is converted automatically. Verified: 5 schemes from
   blocks and from whole donors matched byte for byte; the catalog went from 14 MB to 1.1 MB.
+
+## Analyses (`analyses.py`, Simulate → Analyses and Simulation)
+- **Settings** live in the `SimState` attribute of every `CIITDiagram` (one per sheet): a text tree `KEY:type{value}`,
+  one item per line (types `long`, `double`, `string`, `flag`, `list`, `double[]`; an empty line stands for a parameter
+  without a value). `analyses.parse`/`dump` round-trip it byte for byte. `SIMULATION_INFO > ANALYSES` holds one block per
+  analysis kind (`OP`, `AC`, `PHASOR` = Single Frequency AC, `TRAN`, `FOUR`, `NOISE`, `PSWEEP`, `DC_SWEEP`, …) and
+  `ANALYSIS_LIST` — the analyses of **Batched**, in order, each a full block with its own `ANALYSIS_ID` (from
+  `CURRENT_ID`), `PLOT_TITLE` (Grapher page), `ANALYSIS` (settings), `NODES` (variables) and `RAWFILE_NAME`.
+  The active analysis is `ActiveAnalysis` of the `CMultisimExtension` element (`&ASCbatched`, `&ASCinteractive`).
+- **Variables** (`NODES > Nodes > NODE`): `GROUP 768` = selected for the analysis; `TYPE` 3 — node voltage `$n`
+  (shown as `V(n)`), 4 — source current `vv1#branch` (`I(V1)`), 14 — expression (`$a-$b`, `db(...)`), 5–8 — noise outputs.
+  Only the selected records are needed: Multisim fills in the rest when the dialog opens. Node names are the net names
+  (`LocalName` of `CiNode`, lowercase in SPICE).
+- **Verified in Multisim 14.3**: `OP` (`S.op`). Written so far: `PHASOR` (`S.phasor`).
+- **Results.** On opening, Multisim creates an empty `C:\Temp\NiCds\raw*.tmp` per Batched analysis (`RAWFILE_NAME`;
+  the names change on every opening); Run fills them in SPICE raw format (text header, then `Values:` ASCII or
+  `Binary:` little-endian doubles; complex = re, im pairs). Fourier tables are not written to raw — only Grapher has them
+  (File → Save As `.txt`/`.gra`). Read raw variables by name: their order is not the order of the dialog.
+- **Automation** (Windows, the PC with Multisim): COM server `MultisimInterface.MultisimApp` in `MSInterface.dll`,
+  32-bit only (`SysWOW64` PowerShell/cscript). `Connect()` starts a hidden Multisim; `OpenFile` → `MultisimCircuit`:
+  `DoDCOperatingPoint` / `DoACSweep` / `DoACSingleFrequency` / `RunSimulation` return values of **probes only**;
+  `DoCommandLine(cmdfile, log)` runs XSPICE commands on a netlist (`source net.cir`, `op`, `ac …`, `noise …`,
+  `tran` + `fourier f0 $node`, `write "x.raw" all`; named nodes as `$node` in `print`/`fourier`). No call runs Batched
+  or reads `SimState` — the analysis settings have to be translated into commands. Transfer → Export SPICE netlist gives a
+  plain netlist with all models; ngspice reproduces Batched results of a real circuit from it (operating point, gain,
+  integrated noise) to 4–5 digits.
