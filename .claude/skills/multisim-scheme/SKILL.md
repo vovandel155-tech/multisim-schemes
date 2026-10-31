@@ -55,7 +55,9 @@ Run from the project folder: `python3 my_scheme.py`. The result is `output/<name
 ## Workflow
 1. **Analyse the scheme.** List the elements and nets. With a picture, take the coordinates from it: grid cells (1 cell = 9 Multisim px), scale — a transistor (drain–source, collector–emitter) = 8 cells.
 2. **Look up the pins:** `python3 <skill>/scripts/scheme.py pins` prints the pin offsets of all types for the main orientations;
-   `scheme.py pins 2N3904 FGEN` — catalog parts. For missing parts see «Any scheme from a picture».
+   `scheme.py pins 2N3904 FGEN` — catalog parts. Check every part first: `python3 <skill>/scripts/registry.py --need
+   TL072 BD139 …`. **A part is missing → offer `get_parts.bat` first** (`scripts/order.py` packs it in one command;
+   see «Unknown part» in «Catalog parts»), an equivalent from the catalog second, manual placement last.
 3. **Write the script** following `examples/`. One functional group — one comment. Route the wires as in the picture.
    First look for ready blocks in the picture (`python3 <skill>/scripts/blocks.py` lists them): CMOS inverter, 2-input NAND/NOR,
    input protection, transistor switch, push-pull follower, divider, RC filters, LED with resistor — place them with
@@ -128,8 +130,16 @@ file but the block of the part (`samples/ni/parts.bin` + `parts.idx`, `msgen.Par
   - signal — `AC_VOLTAGE` (amplitude `.2` → `subst={'.2':'1'}`, label «Vpk»), square wave — `CLOCK_VOLTAGE`,
     pulses — `PULSE_VOLTAGE`.
 - **The `build()` report** lists the catalog parts: `from catalog: Q1 BJT_NPN/2N3904 ← donor (RefDes, Multisim version)`.
-- **Unknown part** — `build()` does not start: «ERROR: part X is neither … similar: …». Never silently substitute a similar one:
-  order it (below) or suggest an equivalent and tell the user.
+- **Unknown part** — `build()` does not start: «ERROR: part X is neither … similar: …». Never silently substitute a similar one.
+  **A part is missing — offer the user these options, in this order** (one question, before building):
+  1. **(recommended) get it from their Multisim automatically:** `python3 scripts/order.py "U1;Analog;OPAMP;TL072|TL072CP"
+     "Q1;Transistors;BJT_NPN;BD139" …` writes the request and packs `get_parts.zip`; give the user that zip with three
+     steps: unpack it, close Multisim, double-click `get_parts.bat` (needs Python 3 on the PC), then send back the files
+     from the `donors_new` folder. About a minute, nothing to place by hand. Placeholders and families — «Any scheme from
+     a picture», step 3.
+  2. an equivalent that is already in the catalog (`registry.py --need`) — say what changes in the circuit;
+  3. only if they prefer: they place the parts in an empty Multisim file themselves and send the .ms14.
+  When the files come back: `python3 scripts/harvest.py RETURNED_FOLDER -o ./ni_extra`, build with `MSGEN_REGISTRY=./ni_extra`.
 - **Instruments** are catalog parts too: `FGEN`, `SCOPE`, `BODE`, `WATTMTR`, `FREQCOUNTER`, `WGEN`, `LOGCONV`, `LOGICAN`,
   `DISTOR`, `SPEC_AN`, `NETAN`, `FGEN_AT`, `MULMETER_AT`, `SCOPE_TK`. Their settings (the `InstrumentsData` entry) are copied
   from the donor under the new RefDes. Pins (by the symbol labels): FGEN 1 «+», 2 COM, 3 «−»; SCOPE 1/4 — A+/A−, 2/5 — B+/B−,
@@ -161,8 +171,9 @@ the project root).
    database 0 = Master Database, multi-section parts — section A) → `scripts/harvest.py --keep` (catalog `samples/ni/`).
    - **Git project** (the skill lives in a repository): the bat runs `git pull` before and `git push` after; then `git pull`,
      the log is `samples/ni/donors_log.txt`.
-   - **Chat without git:** pack the skill's `get_parts.bat`, `donors_request.txt`, `scripts/` and `samples/` into a zip for the
-     user; the user sends back the files from `donors_new` and `samples/ni/donors_log.txt`; add them to a catalog:
+   - **Chat without git:** `python3 scripts/order.py LINE…` does both — writes `donors_request.txt` and packs
+     `get_parts.zip` (the bat, the request, `scripts/`, `samples/`) to hand to the user; the user sends back the files from
+     `donors_new` and `samples/ni/donors_log.txt`; add them to a catalog:
      `python3 scripts/harvest.py FOLDER_WITH_FILES -o ./ni_extra` and build with `MSGEN_REGISTRY=./ni_extra`.
 4. **Log:** `ok` — the part was obtained; «cannot be found» — another name; «Invalid Family/Group» — another family.
 5. **Build the scheme** (`Scheme` → `part(...)` → `wires` → `build()`), report and preview as usual. Give the file to the
@@ -334,6 +345,7 @@ Without the last two the file is still built, and the report says what is missin
   a new `version.json` and skill zip. `version.json` — repository, branch, version number, note, sha1 of the files.
 - `scripts/blocks.py` — the block library (`S.block`); `blocks.py` — the list, `blocks.py show NAME` — a block alone.
 - `scripts/registry.py` — the part catalog (`samples/ni/`, `MSGEN_REGISTRY`, the skill samples); `--need A B …`.
+- `scripts/order.py` — orders missing parts: `donors_request.txt` + `get_parts.zip` for the user.
 - `scripts/harvest.py` — a catalog from Multisim files (`--keep` — add to the current one, `--samples` — the Multisim samples).
 - `scripts/donor_template.py` — the placeholder template for `donors.vbs`.
 - For the user's PC (Windows, Multisim 14, nothing to install): `get_parts.bat` + `donors_request.txt` — part
