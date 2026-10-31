@@ -142,7 +142,8 @@ A reference for changing the core (`scripts/msgen.py`) and for taking Multisim f
   `NOISE` (`S.noise`; ground as the reference node is `$0`), `PSWEEP` (`S.psweep`: a circuit parameter, `SweepType` 3,
   `VarParamSweep.Variation` 3 = list of values, `AnalysisType` 2 = Transient) with circuit parameters (`S.param`).
   Fourier display: `Variation` 1 = Logarithmic vertical scale (verified), `LineGraph` 1 = «Display as bar graph» on
-  (0 joins the harmonics with a line), `Normalized` 0/1. Written so far: `TRAN` (`S.tran`).
+  (0 joins the harmonics with a line), `Normalized` 0/1. Bars on the Logarithmic scale are useless: a bar starts
+  at zero, the autoscale runs down to ~1e-244 and every bar looks the same — use the line with Logarithmic. Written so far: `TRAN` (`S.tran`).
 - **The API**: `analyses.Batch` describes a Batched list (`op`, `phasor`, `ac`, `tran`, `fourier`, `noise`, `psweep`);
   `Scheme` methods of the same names fill its own Batch; `analyses.rewrite(src, dst, batch)` replaces the Batched list of
   an existing file and leaves the circuit untouched. Each entry is a copy of the file's own block of that kind with
