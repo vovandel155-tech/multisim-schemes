@@ -145,7 +145,22 @@ def set_phasor(a, freq, fmt='magph', freq_column=True):
     _set(a, 'NUMBER_FORMAT', fmt); _set(a, 'SHOW_FREQ_COLUMN', '1' if freq_column else '0')
 
 
-SETTERS = {'OP': None, 'PHASOR': set_phasor}
+SWEEPS = ('dec', 'oct', 'lin')
+VSCALES = {'linear': 0, 'log': 1, 'db': 2, 'octave': 3}   # Vertical scale of the dialog, in its order
+
+
+def set_ac(a, fstart, fstop, points=100, sweep='dec', vscale='db'):
+    """AC Sweep: fstart..fstop Hz, `points` per decade/octave (sweep 'dec'/'oct') or in total ('lin');
+    vscale — the graph's vertical scale: 'linear', 'log', 'db', 'octave'"""
+    assert sweep in SWEEPS, sweep
+    _set(a, 'VARIATION', sweep); _set(a, 'NPOINTS_PER_VARIATION', '%g' % points)
+    _set(a, 'FSTART', '%g' % fstart); _set(a, 'FSTOP', '%g' % fstop)
+    _set(a, 'vscale', str(VSCALES[vscale]))
+    hr = a.all('hrange')
+    hr[0].value, hr[1].value = '%g' % fstart, '%g' % fstop
+
+
+SETTERS = {'OP': None, 'PHASOR': set_phasor, 'AC': set_ac}
 
 
 def add_batched(R, items):

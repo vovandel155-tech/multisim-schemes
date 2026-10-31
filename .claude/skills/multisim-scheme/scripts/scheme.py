@@ -202,6 +202,11 @@ class Scheme:
         fmt 'magph' — magnitude/phase, 'reim' — real/imaginary. Sources take their «AC analysis magnitude»"""
         s.analyses.append(dict(kind='PHASOR',title=title,vars=list(variables),
                                opts=dict(freq=freq,fmt=fmt,freq_column=freq_column)))
+    def ac(s,variables,fstart=1,fstop=10e6,points=100,sweep='dec',vscale='db',title='AC Sweep'):
+        """add AC Sweep to Batched: frequency response fstart..fstop Hz, `points` per decade ('dec'), octave ('oct')
+        or in total ('lin'); vscale 'linear' | 'log' | 'db' | 'octave' — the vertical scale of the graph"""
+        s.analyses.append(dict(kind='AC',title=title,vars=list(variables),
+                               opts=dict(fstart=fstart,fstop=fstop,points=points,sweep=sweep,vscale=vscale)))
     def wire(s,*pts):
         """wire: the first and last items are a terminal ('element','pin') or a junction J(x,y); in between — bends (x,y).
         3–4 wires at a junction; a junction with 2 wires becomes a bend."""

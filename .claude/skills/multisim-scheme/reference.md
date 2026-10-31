@@ -137,7 +137,8 @@ A reference for changing the core (`scripts/msgen.py`) and for taking Multisim f
   (shown as `V(n)`), 4 — source current `vv1#branch` (`I(V1)`), 14 — expression (`$a-$b`, `db(...)`), 5–8 — noise outputs.
   Only the selected records are needed: Multisim fills in the rest when the dialog opens. Node names are the net names
   (`LocalName` of `CiNode`, lowercase in SPICE).
-- **Verified in Multisim 14.3**: `OP` (`S.op`). Written so far: `PHASOR` (`S.phasor`).
+- **Verified in Multisim 14.3**: `OP` (`S.op`), `PHASOR` (`S.phasor`). Written so far: `AC` (`S.ac`; `vscale` 0–3 =
+  Linear, Logarithmic, Decibel, Octave — assumed from the dialog order, Decibel = 2 as in a real file).
 - **Results.** On opening, Multisim creates an empty `C:\Temp\NiCds\raw*.tmp` per Batched analysis (`RAWFILE_NAME`;
   the names change on every opening); Run fills them in SPICE raw format (text header, then `Values:` ASCII or
   `Binary:` little-endian doubles; complex = re, im pairs). Fourier tables are not written to raw — only Grapher has them
