@@ -136,10 +136,23 @@ def _set(block, key, value):
     block.get(key).value = value
 
 
+def set_phasor(a, freq, fmt='magph', freq_column=True):
+    """Single Frequency AC: one frequency, result format 'magph' (magnitude/phase) or 'reim' (real/imaginary).
+    Written as Multisim 14.3 writes it after the dialog: FREQ_OPT without the hrange pair."""
+    f = a.get('FREQ_OPT')
+    f.value = [n for n in f.value if n.key != 'hrange']
+    _set(f, 'FSTART', '%g' % freq); _set(f, 'FSTOP', '%g' % freq)
+    _set(a, 'NUMBER_FORMAT', fmt); _set(a, 'SHOW_FREQ_COLUMN', '1' if freq_column else '0')
+
+
+SETTERS = {'OP': None, 'PHASOR': set_phasor}
+
+
 def add_batched(R, items):
     """append analyses to Batched on the main sheet and make Batched the active analysis.
-    items: dicts kind ('OP'), title, vars (as in Multisim's Output tab). Each entry is a copy of the file's own
-    settings block of that kind with its id, title and selected variables replaced."""
+    items: dicts kind ('OP', 'PHASOR'), title, vars (as in Multisim's Output tab), opts (settings of the kind).
+    Each entry is a copy of the file's own settings block of that kind with its id, title, settings and
+    selected variables replaced."""
     import copy
     from msgen import enc
     dg = next(d for d in R.iter('CIITDiagram') if d.get('SimState'))
@@ -152,6 +165,7 @@ def add_batched(R, items):
         _set(b, 'ANALYSIS_ID', cur.value); cur.value = str(int(cur.value) + 1)
         _set(b, 'PLOT_TITLE', enc(it['title'])[4:])
         _set(b.get('NODES'), 'Nodes', [var_record(v) for v in it['vars']])
+        if SETTERS[it['kind']]: SETTERS[it['kind']](b.get('ANALYSIS'), **it.get('opts', {}))
         batch.value.append(b)
     dg.set('SimState', dumps(prefix, root))
     ext = next(x for x in R.iter('Extension') if x.get('Class') == 'CMultisimExtension')

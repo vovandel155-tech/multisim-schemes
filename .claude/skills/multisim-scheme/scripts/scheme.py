@@ -197,6 +197,11 @@ class Scheme:
         """add DC Operating Point to Batched (Simulate → Analyses and Simulation); vars as in its Output tab:
         'V(2)', 'I(V1)', 'V(2)-V(3)'. Batched becomes the active analysis — Run starts it"""
         s.analyses.append(dict(kind='OP',title=title,vars=list(variables)))
+    def phasor(s,variables,freq=1000,fmt='magph',freq_column=True,title='Single Frequency AC'):
+        """add Single Frequency AC to Batched: complex values at one frequency `freq`, Hz;
+        fmt 'magph' — magnitude/phase, 'reim' — real/imaginary. Sources take their «AC analysis magnitude»"""
+        s.analyses.append(dict(kind='PHASOR',title=title,vars=list(variables),
+                               opts=dict(freq=freq,fmt=fmt,freq_column=freq_column)))
     def wire(s,*pts):
         """wire: the first and last items are a terminal ('element','pin') or a junction J(x,y); in between — bends (x,y).
         3–4 wires at a junction; a junction with 2 wires becomes a bend."""
