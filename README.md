@@ -39,6 +39,9 @@ follows the picture: the same element positions, the same wire routing, one comm
   frequency response, transient, Fourier/THD, noise, parameter sweep over circuit parameters — with the variables and
   expressions you need; it can also set up the analyses of a circuit you already have. Results matched ngspice to
   4–5 digits.
+- **A circuit description:** the Description Box filled from simple markup — headings, paragraphs, sub/superscripts,
+  lists, tables and pictures (the circuit, graphs from ngspice or your screenshots), including a ready section about
+  the Batched analyses; it can be added to the description of an existing file.
 - **A library of ready blocks:** CMOS inverter, 2-input NAND/NOR, CMOS input protection, transistor switch, push-pull
   follower, divider, RC filters, LED with a resistor — one line each, in any of 8 orientations.
 - **Checks before you ever open Multisim:** wire overlaps, wires through pins or bodies, label collisions, a PNG
@@ -166,6 +169,9 @@ endorsed by NI; part data in the catalog was taken from files saved by Multisim 
 - **Анализы одной кнопкой Run:** скилл записывает в файл список Batched — режим покоя, коэффициент усиления на одной
   частоте, АЧХ, переходный процесс, Фурье/КГИ, шум, перебор параметров схемы — с нужными переменными и выражениями;
   может настроить анализы и в уже готовой схеме. Результаты совпали с ngspice до 4–5 знаков.
+- **Описание схемы:** Description Box из простой разметки — заголовки, абзацы, индексы, списки, таблицы и картинки
+  (схема, графики из ngspice или ваши скриншоты), включая готовый раздел о составе пакетного анализа; описание можно
+  дописать и в готовый файл.
 - **Библиотека готовых узлов:** КМОП-инвертор, 2И-НЕ/2ИЛИ-НЕ, защита входа КМОП, транзисторный ключ, двухтактный
   повторитель, делитель, RC-фильтры, светодиод с резистором — одна строка на узел, в любой из 8 ориентаций.
 - **Проверки до открытия Multisim:** наложения проводов, провода через выводы и корпуса, наезды подписей, PNG-превью

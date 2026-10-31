@@ -223,8 +223,10 @@ Tools → Description Box Editor: a formatted text saved in the file (in the Des
   header), `**bold**`, `*italic*`, `R_{н}` subscript, `10^{-3}` superscript,
   `![Рисунок 1 — Схема](file.png){width=12}` — a centered PNG/JPEG picture with its caption, width in cm (default:
   the text width at most). Body text: Times New Roman 14, first-line indent 1.25 cm, justified (Russian coursework style).
-- Pictures to use: the circuit preview (`.msgen/preview/<name>.png` after `build()`), graphs computed in ngspice
-  (plot them with matplotlib), the user's screenshots.
+- **Before putting pictures in, ask the user** which ones they want: graphs computed by the skill in ngspice (plotted
+  with matplotlib — ready at once, but they are not Multisim's own windows) or their own screenshots from Multisim
+  (Grapher, the circuit — what a teacher expects to see; ask them to send the files). Mixing is fine. The circuit
+  itself can always come from the preview (`.msgen/preview/<name>.png` after `build()`).
 - `analyses.markup('file.ms14')` — an English draft of a section about the Batched list (a table: Grapher page,
   analysis and its settings, variables); translate it to the user's language, then put it with `rewrite(..., append=True)`.
 
