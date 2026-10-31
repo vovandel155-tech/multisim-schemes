@@ -14,6 +14,7 @@ import sys, os, math, time
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 from msgen import *
 import geom, validate
+import analyses as AN
 
 J=lambda x,y:('J',x,y)
 G=9   # px per cell
@@ -140,7 +141,7 @@ TMAX=1e-5           # interactive simulation step, s (instead of «automatic» �
 class Scheme:
     def __init__(s,name,sheet_min=SHEET_MIN,margin=MARGIN_IN,outdir=None,tmax=TMAX):
         s.name=name; s.sheet_min=sheet_min; s.margin=margin; s.outdir=outdir or OUT; s.tmax=tmax
-        s.parts=[]; s.W=[]; s.cnt={}; s.probes=[]; s.analyses=[]; s.params={}
+        s.parts=[]; s.W=[]; s.cnt={}; s.probes=[]; s.batch=AN.Batch(); s.params={}
     # ---------- description ----------
     def part(s,name,kind,pin,x,y,rot=0,mirror=False,value=None,label='auto',refdes=None,glob=None,subst=None):
         """element `kind` placed so that its pin `pin` lands in cell (x, y); label: 'auto' | right/left/top/bottom | None"""
@@ -193,43 +194,21 @@ class Scheme:
         p=next(p for p in s.parts if p['name']==t[0])
         o=blocks.pin_offsets(p['kind'],p['pin'],p['rot'],p['mirror'])[t[1]]
         return (p['x']+o[0],p['y']+o[1])
-    def op(s,variables,title='DC Operating Point'):
-        """add DC Operating Point to Batched (Simulate → Analyses and Simulation); vars as in its Output tab:
-        'V(2)', 'I(V1)', 'V(2)-V(3)'. Batched becomes the active analysis — Run starts it"""
-        s.analyses.append(dict(kind='OP',title=title,vars=list(variables)))
-    def phasor(s,variables,freq=1000,fmt='magph',freq_column=True,title='Single Frequency AC'):
-        """add Single Frequency AC to Batched: complex values at one frequency `freq`, Hz;
-        fmt 'magph' — magnitude/phase, 'reim' — real/imaginary. Sources take their «AC analysis magnitude»"""
-        s.analyses.append(dict(kind='PHASOR',title=title,vars=list(variables),
-                               opts=dict(freq=freq,fmt=fmt,freq_column=freq_column)))
-    def ac(s,variables,fstart=1,fstop=10e6,points=100,sweep='dec',vscale='db',title='AC Sweep'):
-        """add AC Sweep to Batched: frequency response fstart..fstop Hz, `points` per decade ('dec'), octave ('oct')
-        or in total ('lin'); vscale 'linear' | 'log' | 'db' | 'octave' — the vertical scale of the graph"""
-        s.analyses.append(dict(kind='AC',title=title,vars=list(variables),
-                               opts=dict(fstart=fstart,fstop=fstop,points=points,sweep=sweep,vscale=vscale)))
-    def fourier(s,variables,freq=1000,harmonics=9,tstop=None,tmax=None,title='Fourier'):
-        """add Fourier to Batched: harmonics of `freq` Hz (and THD) after a transient of `tstop` s
-        (default 10 periods) with maximum step `tmax` s (None — calculated by Multisim)"""
-        s.analyses.append(dict(kind='FOUR',title=title,vars=list(variables),
-                               opts=dict(freq=freq,harmonics=harmonics,tstop=tstop,tmax=tmax)))
-    def noise(s,source,output,ref='0',fstart=20,fstop=20e3,points=100,spectrum=False,variables=None,title='Noise'):
-        """add Noise to Batched: input-referred to source `source` (its name, e.g. 'VIN'), output between nets
-        `output` and `ref` ('0' — ground), fstart..fstop Hz. spectrum=False — integrated noise (inoise_total,
-        onoise_total), True — spectral density (inoise_spectrum, onoise_spectrum)"""
-        kind='spectrum' if spectrum else 'total'
-        s.analyses.append(dict(kind='NOISE',title=title,vars=list(variables or ['inoise_'+kind,'onoise_'+kind]),
-                               opts=dict(source=source,output=output,ref=ref,fstart=fstart,fstop=fstop,points=points,
-                                         spectrum=spectrum)))
+    # ---------- analyses (Simulate → Analyses and Simulation → Batched; see analyses.Batch for the arguments) ----------
+    def op(s,*a,**k): s.batch.op(*a,**k)
+    def phasor(s,*a,**k): s.batch.phasor(*a,**k)
+    def ac(s,*a,**k): s.batch.ac(*a,**k)
+    def tran(s,*a,**k): s.batch.tran(*a,**k)
+    def fourier(s,*a,**k): s.batch.fourier(*a,**k)
+    def noise(s,*a,**k): s.batch.noise(*a,**k)
     def param(s,name,value):
         """circuit parameter (Tools → Circuit parameters): a part uses it through subst, e.g. the amplitude of an
         AC source — part(..., subst={'.2':'Uin'}); swept by psweep()"""
         s.params[name]=value
-    def psweep(s,variables,param,values,tstop=1e-3,tstart=0,tmax=None,ic='auto_ic',title='Parameter Sweep'):
-        """add Parameter Sweep to Batched: circuit parameter `param` takes each of `values`; for each — Transient
-        from tstart to tstop s (maximum step tmax, initial conditions ic 'auto_ic' | 'dcop' | 'zero')"""
+    def psweep(s,variables,param,values,**k):
+        """Parameter Sweep of circuit parameter `param` (defined by param()) over `values`, a Transient for each"""
         assert param in s.params,'define the circuit parameter first: S.param(%r, value)'%param
-        s.analyses.append(dict(kind='PSWEEP',title=title,vars=list(variables),
-                               opts=dict(param=param,values=list(values),current=s.params[param],tstop=tstop,tstart=tstart,tmax=tmax,ic=ic)))
+        s.batch.psweep(variables,param,values,current=s.params[param],**k)
     def wire(s,*pts):
         """wire: the first and last items are a terminal ('element','pin') or a junction J(x,y); in between — bends (x,y).
         3–4 wires at a junction; a junction with 2 wires becomes a bend."""
@@ -264,7 +243,7 @@ class Scheme:
         b=s._build((ox,oy)); s.origin=(ox,oy)                     # 2nd pass — centered on a W×H sheet
         os.makedirs(s.outdir,exist_ok=True)
         out=os.path.join(s.outdir,s.name+'.ms14')
-        xml=finalize(b,s.name,out,rename=False,sheet=(W,H),tmax=s.tmax,analyses=s.analyses,params=s.params)
+        xml=finalize(b,s.name,out,rename=False,sheet=(W,H),tmax=s.tmax,analyses=s.batch.items,params=s.params)
         xp=os.path.join(CACHE,s.name+'_out.xml'); open(xp,'wb').write(xml)
         s.b=b; s.xml=xp; s.sheet=(W,H)
         print('== %s: sheet %d×%d inches, built in %.1f s → %s'%(s.name,W,H,time.time()-t0,os.path.relpath(out,REPO)))

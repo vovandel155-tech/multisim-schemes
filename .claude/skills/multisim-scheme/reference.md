@@ -139,8 +139,14 @@ A reference for changing the core (`scripts/msgen.py`) and for taking Multisim f
   (`LocalName` of `CiNode`, lowercase in SPICE).
 - **Verified in Multisim 14.3** (`gallery/demos/batched_all`): `OP` (`S.op`), `PHASOR` (`S.phasor`), `AC` (`S.ac`;
   `vscale` 2 = Decibel; 0, 1, 3 = Linear, Logarithmic, Octave assumed from the dialog order), `FOUR` (`S.fourier`),
-  `NOISE` (`S.noise`; ground as the reference node is `$0`). Written so far: `PSWEEP` (`S.psweep`: a circuit parameter,
-  `SweepType` 3, `VarParamSweep.Variation` 3 = list of values, `AnalysisType` 2 = Transient).
+  `NOISE` (`S.noise`; ground as the reference node is `$0`), `PSWEEP` (`S.psweep`: a circuit parameter, `SweepType` 3,
+  `VarParamSweep.Variation` 3 = list of values, `AnalysisType` 2 = Transient) with circuit parameters (`S.param`).
+  Written so far: `TRAN` (`S.tran`); Fourier `Variation` (vertical scale, 1 = Logarithmic assumed) and `LineGraph`
+  0 = bar graph (assumed).
+- **The API**: `analyses.Batch` describes a Batched list (`op`, `phasor`, `ac`, `tran`, `fourier`, `noise`, `psweep`);
+  `Scheme` methods of the same names fill its own Batch; `analyses.rewrite(src, dst, batch)` replaces the Batched list of
+  an existing file and leaves the circuit untouched. Each entry is a copy of the file's own block of that kind with
+  a new id, title, settings, variables and an empty `RAWFILE_NAME` (Multisim assigns it on opening).
 - **Circuit parameters** (`S.param`): `UniqueSheetGroups > SheetGroupInfo > CCircuitParamSheetGroupExtension >
   CircuitParamData`: `CircuitParamNameList/CircuitParamName NameItem` and `CircuitParamValueList` with
   `CircuitParamTreeInstanceGUIDPath` = `{CSheetComponent GUID}/{main DesignSheet SheetID}/` (the text path next to it

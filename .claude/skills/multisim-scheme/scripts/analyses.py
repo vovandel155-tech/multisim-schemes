@@ -167,16 +167,25 @@ def _freq(f, fstart, fstop, points, sweep, vscale):
     set_ac(f, fstart, fstop, points, sweep, vscale)
 
 
-def set_fourier(a, freq, harmonics=9, tstop=None, tmax=None, vscale=0):
+def set_tran(t, tstop, tstart=0, tmax=None, ic=None):
+    """Transient settings block (TRAN, and Tran inside Fourier / Parameter Sweep): tstart..tstop s, maximum step
+    tmax s (None — calculated by Multisim), initial conditions ic 'auto_ic' | 'dcop' | 'zero' (None — keep)"""
+    _set(t, 'TSTOP', '%g' % tstop); _set(t, 'TSTART', '%g' % tstart)
+    if ic: _set(t, 'IC', ic)
+    if tmax:
+        m = t.get('TMAX'); m.type, m.value = 'double', '%g' % tmax
+
+
+def set_fourier(a, freq, harmonics=9, tstop=None, tmax=None, ic=None, vscale=0, bars=None, normalized=None):
     """Fourier: fundamental `freq` Hz, `harmonics` harmonics, transient up to `tstop` s (default 10 periods),
-    maximum step `tmax` s (None — Multisim calculates it); vscale — the graph scale index (0 linear)"""
+    maximum step `tmax` s (None — Multisim calculates it); vscale — the graph scale index (0 linear),
+    bars — bar graph instead of a line (LineGraph 0), normalized — Normalize graphs"""
     tstop = tstop or 10.0 / freq
     _set(a, 'FundFreqSet', '1'); _set(a, 'FundFreq', '%g' % freq); _set(a, 'NumFreqs', str(harmonics))
     _set(a, 'TStop', '%g' % tstop); _set(a, 'Variation', str(vscale))
-    t = a.get('Tran')
-    _set(t, 'TSTOP', '%g' % tstop)
-    if tmax:
-        m = t.get('TMAX'); m.type, m.value = 'double', '%g' % tmax
+    if bars is not None: _set(a, 'LineGraph', '0' if bars else '1')
+    if normalized is not None: _set(a, 'Normalized', '1' if normalized else '0')
+    set_tran(a.get('Tran'), tstop, 0, tmax, ic)
 
 
 def set_noise(a, source, output, ref='0', fstart=20, fstop=20e3, points=100, sweep='dec', vscale='log',
@@ -204,10 +213,8 @@ def set_psweep(a, param, values, current=None, inner='tran', tstop=1e-3, tstart=
     _set(v, 'List', [Node('-', '-', '%g' % x) for x in values])
     _set(a, 'VariableParamToSweep', [Node('name', 'string', param.lower()), Node('value', 'string', '%g' % (values[0] if current is None else current)),
                                       Node('paramtype', 'long', '4')])
-    t = a.get('Tran')
-    _set(t, 'TSTOP', '%g' % tstop); _set(t, 'TSTART', '%g' % tstart); _set(t, 'IC', ic)
-    if tmax:
-        m = t.get('TMAX'); m.type, m.value = 'double', '%g' % tmax
+    _set(a, 'GroupTraces', '1')
+    set_tran(a.get('Tran'), tstop, tstart, tmax, ic)
 
 
 def circuit_params(R, params, title):
@@ -233,10 +240,10 @@ def circuit_params(R, params, title):
             if it.get('Value') in keys: ind[k].set('Value', '0')
 
 
-SETTERS = {'OP': None, 'PSWEEP': set_psweep, 'PHASOR': set_phasor, 'AC': set_ac, 'FOUR': set_fourier, 'NOISE': set_noise}
+SETTERS = {'OP': None, 'PSWEEP': set_psweep, 'TRAN': set_tran, 'PHASOR': set_phasor, 'AC': set_ac, 'FOUR': set_fourier, 'NOISE': set_noise}
 
 
-def add_batched(R, items):
+def add_batched(R, items, replace=False):
     """append analyses to Batched on the main sheet and make Batched the active analysis.
     items: dicts kind ('OP', 'PHASOR'), title, vars (as in Multisim's Output tab), opts (settings of the kind).
     Each entry is a copy of the file's own settings block of that kind with its id, title, settings and
@@ -247,17 +254,77 @@ def add_batched(R, items):
     prefix, root = loads(dg.get('SimState'))
     an = root[0].get('ANALYSES')
     batch, cur = an.get('ANALYSIS_LIST'), an.get('CURRENT_ID')
+    if replace: batch.value = []
     for it in items:
         b = copy.deepcopy(an.get(it['kind']))
         b.nl = True
         _set(b, 'ANALYSIS_ID', cur.value); cur.value = str(int(cur.value) + 1)
         _set(b, 'PLOT_TITLE', enc(it['title'])[4:])
+        _set(b, 'RAWFILE_NAME', '')                            # Multisim assigns the result file on opening
         _set(b.get('NODES'), 'Nodes', [var_record(v) for v in it['vars']])
         if SETTERS[it['kind']]: SETTERS[it['kind']](b.get('ANALYSIS'), **it.get('opts', {}))
+        if it.get('max_points'): _set(b, 'MAX_POINTS', str(it['max_points']))
         batch.value.append(b)
     dg.set('SimState', dumps(prefix, root))
     ext = next(x for x in R.iter('Extension') if x.get('Class') == 'CMultisimExtension')
     ext.set('ActiveAnalysis', '&ASCbatched')
+
+
+class Batch:
+    """a Batched list being described: Scheme uses one for a new circuit, rewrite() — for an existing file.
+    Variables as in the Output tab of the dialog: 'V(2)', 'I(V1)', 'V(outl)-V(outr)', 'db(...)'.
+    max_points — Maximum number of points of the analysis (Analysis options; Multisim default 128000)."""
+
+    def __init__(self):
+        self.items = []
+
+    def _add(self, kind, title, variables, max_points=None, **opts):
+        self.items.append(dict(kind=kind, title=title, vars=list(variables), opts=opts, max_points=max_points))
+
+    def op(self, variables, title='DC Operating Point', max_points=None):
+        """DC Operating Point"""
+        self._add('OP', title, variables, max_points)
+
+    def phasor(self, variables, freq=1000, fmt='magph', freq_column=True, title='Single Frequency AC', max_points=None):
+        """Single Frequency AC at `freq` Hz; fmt 'magph' (magnitude/phase) or 'reim'; sources take their AC magnitude"""
+        self._add('PHASOR', title, variables, max_points, freq=freq, fmt=fmt, freq_column=freq_column)
+
+    def ac(self, variables, fstart=1, fstop=10e6, points=100, sweep='dec', vscale='db', title='AC Sweep', max_points=None):
+        """AC Sweep fstart..fstop Hz, `points` per decade/octave or in total ('lin'); vscale linear | log | db | octave"""
+        self._add('AC', title, variables, max_points, fstart=fstart, fstop=fstop, points=points, sweep=sweep, vscale=vscale)
+
+    def tran(self, variables, tstop, tstart=0, tmax=None, ic='auto_ic', title='Transient', max_points=None):
+        """Transient tstart..tstop s, maximum step tmax s, initial conditions ic 'auto_ic' | 'dcop' | 'zero'"""
+        self._add('TRAN', title, variables, max_points, tstop=tstop, tstart=tstart, tmax=tmax, ic=ic)
+
+    def fourier(self, variables, freq=1000, harmonics=9, tstop=None, tmax=None, ic=None, vscale=0, bars=None,
+                normalized=None, title='Fourier', max_points=None):
+        """Fourier: harmonics of `freq` Hz (and THD) after a transient of `tstop` s (default 10 periods)"""
+        self._add('FOUR', title, variables, max_points, freq=freq, harmonics=harmonics, tstop=tstop, tmax=tmax, ic=ic,
+                  vscale=vscale, bars=bars, normalized=normalized)
+
+    def noise(self, source, output, ref='0', fstart=20, fstop=20e3, points=100, spectrum=False, variables=None,
+              title='Noise', max_points=None):
+        """Noise input-referred to source `source` (its name), output between nets `output` and `ref` ('0' — ground);
+        spectrum=False — integrated (inoise_total, onoise_total), True — spectral density (inoise/onoise_spectrum)"""
+        kind = 'spectrum' if spectrum else 'total'
+        self._add('NOISE', title, variables or ['inoise_' + kind, 'onoise_' + kind], max_points, source=source,
+                  output=output, ref=ref, fstart=fstart, fstop=fstop, points=points, spectrum=spectrum)
+
+    def psweep(self, variables, param, values, current=None, tstop=1e-3, tstart=0, tmax=None, ic='auto_ic',
+               title='Parameter Sweep', max_points=None):
+        """Parameter Sweep of circuit parameter `param` over `values`, a Transient tstart..tstop s for each"""
+        self._add('PSWEEP', title, variables, max_points, param=param, values=list(values), current=current,
+                  tstop=tstop, tstart=tstart, tmax=tmax, ic=ic)
+
+
+def rewrite(src, dst, batch):
+    """replace the Batched list of an existing Multisim file `src` with `batch` and write `dst`;
+    the circuit itself is not touched"""
+    import blast, msgen
+    R = msgen.Doc(blast.read_ms(src)).root
+    add_batched(R, batch.items, replace=True)
+    blast.write_ms2(msgen.serialize(R), dst)
 
 
 def sim_states(xml):
