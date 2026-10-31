@@ -5,6 +5,7 @@ files, packaged as a Claude skill (`.claude/skills/multisim-scheme/`), plus a ga
 
 ## Language
 - **Everything written into the repository is English**: code, comments, docs, commit messages, release notes.
+  The one exception: `README.md` ends with a full Russian version («Русская версия») — keep it in sync with the English part.
 - **Talk to the owner in Russian** (chat replies only).
 
 ## Commit authorship
