@@ -1,7 +1,7 @@
 """Circuit description (Tools → Description Box Editor) from simple markup.
 
-In the file the description is the DescData element inside the SubSheet of the main sheet: DescBytes/@BaseSixtyFour holds
-an RTF document (RichEdit), base64 in lines of 60 characters separated by CR LF, the RTF ends with a NUL byte.
+In the file the description is a sheet of its own (see put()); its DescData/DescBytes/@BaseSixtyFour holds an RTF
+document (RichEdit), base64 in lines of 60 characters separated by CR LF, the RTF ends with a NUL byte.
 
 Markup (as in Markdown): consecutive text lines make one paragraph, a blank line starts a new one;
 headings, bullet items and table rows take one line each:
@@ -107,19 +107,43 @@ def desc_bytes(text):
 
 
 def put(R, markup):
-    """write the description into the main sheet of document root R (replacing an existing one)"""
+    """write the description into document root R, replacing an existing one. In Multisim the description is a sheet of
+    its own (Design Toolbox: «<title>-Description»): a CDescEditSubSheet in UniqueSheets/SheetInfos holding DescData,
+    a CSheetComponent next to the main one, a SheetGroupInfo entry and a project tree item.
+    The skeleton is samples/description_sheet.xml (taken from a Multisim-saved file)."""
+    import os, copy, xml.etree.ElementTree as ET
+    from msgen import Doc, enc, guid
+    from geom import dec
+    old = [d for d in R.iter('DesignSheet') if d.get('Class') == 'CDescEditSubSheet']
+    if old:                                                   # replace the text of an existing description
+        _fill(old[0].find('Sheet/SubSheet/DescData'), markup); return
+    main = next(g for g in R.iter('Group') if g.get('Class') == 'CSheetComponent')
+    name = dec(main.get('SheetName')) + '-Description'
+    skel = ET.fromstring(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'samples',
+                                           'description_sheet.xml'), 'rb').read())
+    cont, comp = copy.deepcopy(skel[0]), copy.deepcopy(skel[1])
+    sheet = cont.find('Sheet/Variable/DesignSheet')
+    n = max(int(e.get('ObjectID')) for e in R.iter() if (e.get('ObjectID') or '').isdigit()) + 1
+    sheet.set('ObjectID', str(n)); comp.find('Group/Store/DataTreeContainer/Rectangle').set('ObjectID', str(n + 1))
+    cont.set('ObjectID', str(n + 2)); comp.set('ObjectID', str(n + 4))           # the same numbering as Multisim's
+    sheet.set('Title', enc(name)); sheet.set('SheetID', guid())
+    comp.set('SheetName', enc(name)); comp.set('GUID', guid())
+    _fill(sheet.find('Sheet/SubSheet/DescData'), markup)
+    R.find('Project/UniqueSheets/SheetInfos').append(cont)
+    par = {c: p for p in R.iter() for c in p}
+    par[main].append(comp)
+    ET.SubElement(ET.SubElement(R.find('Project/UniqueSheetGroups'), 'SheetGroupInfo',
+                                {'FirstSheetComponentObjectID': str(n + 4)}), 'Extensions')
+    tree = next(x for x in R.iter('Extension') if x.get('Class') == 'CPrjTreeCtrlExtension').find('SWsTreeItem/Children')
+    ET.SubElement(ET.SubElement(tree, 'SWsTreeItem', {'Class': 'SWsTreeItem', 'Name': enc(name)}), 'Children')
+
+
+def _fill(desc, markup):
+    """DescData: the RTF goes first, before TotalLabelInfo"""
     import xml.etree.ElementTree as ET
-    sub = next(R.iter('SubSheet'))
-    for d in sub.findall('DescData'): sub.remove(d)
-    d = ET.SubElement(sub, 'DescData', {'Class': 'CDescriptionData', 'ShowBar': '0', 'FloatBar': '0', 'BarLeft': '450',
-                                        'BarTop': '550', 'BarRight': '1000', 'BarBottom': '700', 'HorzScroll': '0',
-                                        'VertScroll': '0', 'Version': '2', 'Wrap': '2', 'Unit': '0', 'WordSel': '0'})
-    ET.SubElement(d, 'DescBytes', {'BaseSixtyFour': desc_bytes(rtf(markup))})
-    ET.SubElement(ET.SubElement(d, 'TotalLabelInfo'), 'LabelArray', {'Class': 'CTotalLabelInfo'})
-    q = ET.SubElement(d, 'TotalQuestions', {'Class': 'CTotalQuestions', 'Heading': '', 'Instruction': '', 'ViaEmail': '0',
-                                            'MailTo': '', 'MailSubject': '', 'MailBody': '', 'ShowMsg': '0', 'Message': ''})
-    f = ET.SubElement(q, 'TesteeFields')
-    for n in ('Name', 'Position', 'Organization', 'Date'): ET.SubElement(f, 'Field', {'Name': '&ASC' + n, 'Value': ''})
+    for k in desc.findall('DescBytes'): desc.remove(k)
+    b = ET.Element('DescBytes', {'BaseSixtyFour': desc_bytes(rtf(markup))})
+    desc.insert(0, b)
 
 
 def read(path):

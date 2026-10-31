@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="ASCII"?>
+<DescriptionSheet><SheetContainer Class="CSheetContainer" ObjectID="255">
+<Sheet>
+<Variable>
+<DesignSheet Class="CDescEditSubSheet" ObjectID="253" Layer="511" LineColor="2" LineRGB="0" FillColor="2" FillRGB="0" ObjectInfo="16842788" LineThickness="0" CurveMode="1" EndCap="0" Rotation="0" MultiObjects="0" Mirrored="0" Name="" DocType="&amp;ASCDESCRIPTIONBOX" Title="&amp;ASCTITLE-Description" PageName="&amp;ASC1" WorkAreaLeft="-1024000000" WorkAreaBottom="-1024000000" WorkAreaRight="1024000000" WorkAreaTop="1024000000" SheetID="{FE87FAB1-25F3-430E-8DD5-B3992EED205E}">
+<Object>
+<Point Class="CDrawPoint" X="0" Y="0"/>
+<Point Class="CDrawPoint" X="30000000" Y="0"/>
+<Point Class="CDrawPoint" X="30000000" Y="30000000"/>
+<Point Class="CDrawPoint" X="0" Y="30000000"/>
+</Object>
+<Group>
+<Store Class="CDrawingStore">
+<DataTreeContainer Class="CTreeDataContainer">
+<Rectangle Class="CDrawRectangle" ObjectID="254" Layer="511" LineColor="2" LineRGB="0" FillColor="2" FillRGB="0" ObjectInfo="38" LineThickness="0" CurveMode="1" EndCap="0">
+<Object>
+<Point Class="CDrawPoint" X="0" Y="0"/>
+<Point Class="CDrawPoint" X="0" Y="30000000"/>
+<Point Class="CDrawPoint" X="30000000" Y="30000000"/>
+<Point Class="CDrawPoint" X="30000000" Y="0"/>
+</Object>
+</Rectangle>
+</DataTreeContainer>
+</Store>
+<RefPoint Class="CRefPoint" X="0" Y="0"/>
+</Group>
+<Sheet>
+<Variable>
+<OrthogonalGrid Class="COrthogonalGrid" GridStyle="1" VisibleStep="1000000" GridStep="1" SecondGridStep="500000"/>
+</Variable>
+<FavoriteLayers>
+<FavoriteLayer Layer="512"/>
+<FavoriteLayer Layer="512"/>
+<FavoriteLayer Layer="512"/>
+<FavoriteLayer Layer="512"/>
+<FavoriteLayer Layer="512"/>
+<FavoriteLayer Layer="512"/>
+<FavoriteLayer Layer="512"/>
+<FavoriteLayer Layer="512"/>
+<FavoriteLayer Layer="512"/>
+<FavoriteLayer Layer="512"/>
+</FavoriteLayers>
+<LayerDefinition Class="CLayerDefinition"/>
+<ColorDefinition Class="CColorDefinition" Name="" Default="0"/>
+<UnitInfo Class="CUnitInfo" Name="&amp;ASCmm" Factor="1e-06" DBFactor="1" Indicator="&amp;ASCmm"/>
+<PreSubSheet/>
+<Store Class="CDrawingStore">
+<DataTreeContainer Class="CTreeDataContainer"/>
+</Store>
+<SubSheet>
+<DescData Class="CDescriptionData" ShowBar="0" FloatBar="0" BarLeft="450" BarTop="550" BarRight="1000" BarBottom="700" HorzScroll="0" VertScroll="0" Version="2" Wrap="2" Unit="0" WordSel="0">
+<TotalLabelInfo>
+<LabelArray Class="CTotalLabelInfo"/>
+</TotalLabelInfo>
+<TotalQuestions Class="CTotalQuestions" Heading="" Instruction="" ViaEmail="0" MailTo="" MailSubject="" MailBody="" ShowMsg="0" Message="">
+<TesteeFields>
+<Field Name="&amp;ASCName" Value=""/>
+<Field Name="&amp;ASCPosition" Value=""/>
+<Field Name="&amp;ASCOrganization" Value=""/>
+<Field Name="&amp;ASCDate" Value=""/>
+</TesteeFields>
+</TotalQuestions>
+</DescData>
+</SubSheet>
+<ExportInformation Class="CTotalExportInformation" Init="0" CurSel="" OutFolder="&amp;ASC.\Ultiboard Exports\" OutOptions="3">
+<CurrentContainer Type="4">
+<DataExportContainer Class="CExportContainer" Name="&amp;ASC[Defaults]" SortNum="0"/>
+</CurrentContainer>
+</ExportInformation>
+<TTFont/>
+</Sheet>
+</DesignSheet>
+</Variable>
+</Sheet>
+</SheetContainer>
+<Group Class="CSheetComponent" ObjectID="257" Layer="511" LineColor="2" LineRGB="0" FillColor="2" FillRGB="0" ObjectInfo="16842790" LineThickness="0" CurveMode="1" EndCap="0" Rotation="0" MultiObjects="0" Mirrored="0" Name="" SheetName="&amp;ASCTITLE-Description" GUID="{01A5BFBA-3ADC-4CFC-8613-F863B32FE059}" Path="" PathAbs="">
+<Object>
+<Point Class="CDrawPoint" X="0" Y="0"/>
+<Point Class="CDrawPoint" X="30000000" Y="0"/>
+<Point Class="CDrawPoint" X="30000000" Y="30000000"/>
+<Point Class="CDrawPoint" X="0" Y="30000000"/>
+</Object>
+<Group>
+<Store Class="CDrawingStore">
+<DataTreeContainer Class="CTreeDataContainer">
+<Rectangle Class="CDrawRectangle" ObjectID="254" Layer="511" LineColor="2" LineRGB="0" FillColor="2" FillRGB="0" ObjectInfo="38" LineThickness="0" CurveMode="1" EndCap="0">
+<Object>
+<Point Class="CDrawPoint" X="0" Y="0"/>
+<Point Class="CDrawPoint" X="0" Y="30000000"/>
+<Point Class="CDrawPoint" X="30000000" Y="30000000"/>
+<Point Class="CDrawPoint" X="30000000" Y="0"/>
+</Object>
+</Rectangle>
+</DataTreeContainer>
+</Store>
+<RefPoint Class="CRefPoint" X="0" Y="0"/>
+</Group>
+<Extensions>
+<Extension Class="CMultisimSheetComponentExtension">
+<Variant Class="CSheetVariantData" CurrentVariant="&amp;ASCDefault1">
+<SheetVariantMap>
+<VariantNames VariantName="&amp;ASCDefault1">
+<VariantData Class="CVariantData" Comments=""/>
+</VariantNames>
+</SheetVariantMap>
+<Reports Class="CReportVariantData" IncludeVariantByDefault="1">
+<SheetVariantMap/>
+</Reports>
+</Variant>
+</Extension>
+</Extensions>
+</Group>
+</DescriptionSheet>
