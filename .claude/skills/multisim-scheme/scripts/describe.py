@@ -8,6 +8,8 @@ headings, bullet items and table rows take one line each:
     # Heading               ## Subheading
     a paragraph …           - a bullet item
     | a | table | row |     (a row of dashes |---|---| after the first row makes it bold)
+    ![Figure 1 — caption](picture.png){width=12}    a centered PNG/JPEG picture with its caption below;
+                                                    width in cm (default: its size at 96 dpi, at most the text width)
 inline: **bold**, *italic*, R_{н} subscript, 10^{-3} superscript.
 """
 import re, base64
@@ -70,6 +72,40 @@ def _table(rows):
     return ''.join(out)
 
 
+PICTURE = re.compile(r'!\[(.*?)\]\((.+?)\)(?:\{width=([\d.]+)\})?$')
+
+
+def _image_size(data):
+    """(width, height) in pixels of PNG or JPEG data, and the RTF blip type"""
+    import struct
+    if data[:8] == b'\x89PNG\r\n\x1a\n': return struct.unpack('>II', data[16:24]) + ('pngblip',)
+    if data[:2] == b'\xff\xd8':
+        i = 2
+        while i < len(data):
+            marker, size = data[i + 1], struct.unpack('>H', data[i + 2:i + 4])[0]
+            if 0xc0 <= marker <= 0xcf and marker not in (0xc4, 0xc8, 0xcc):
+                h, w = struct.unpack('>HH', data[i + 5:i + 9]); return w, h, 'jpegblip'
+            i += 2 + size
+    raise ValueError('only PNG and JPEG pictures')
+
+
+def _picture(path, caption, width_cm, fs):
+    """a centered picture paragraph (single line spacing — otherwise Multisim leaves a gap under it) and its caption"""
+    data = open(path, 'rb').read()
+    w, h, blip = _image_size(data)
+    goal_w = w * 15                                       # twips at 96 dpi
+    if width_cm: goal_w = float(width_cm) / 2.54 * 1440
+    goal_w = min(goal_w, TEXT_WIDTH)
+    goal_h = goal_w * h / w
+    hexs = data.hex()
+    hexs = '\r\n'.join(hexs[i:i + 128] for i in range(0, len(hexs), 128))
+    pict = (r'{\pict{\*\picprop{\sp{\sn wzDescription}{\sv Image}}}\%s\picw%d\pich%d\picwgoal%d\pichgoal%d' '\r\n'
+            % (blip, round(w * 2540 / 96), round(h * 2540 / 96), round(goal_w), round(goal_h)) + hexs + '}')
+    out = r'\pard\keepn\widctlpar\sb120\sl240\slmult1\qc ' + pict + r'\par' + '\r\n'
+    if caption: out += r'\pard\widctlpar\sa120\qc\fs%d %s\par' % (fs, _inline(caption)) + '\r\n'
+    return out
+
+
 def rtf(markup):
     """markup (see the module docstring) -> RTF text"""
     fs = FONT_PT * 2
@@ -84,7 +120,10 @@ def rtf(markup):
             flush(); table.append(s.strip('|').split('|')); continue
         if table: body.append(_table(table)); table = []
         m = re.match(r'(#{1,2})\s+(.*)', s)
+        pic = PICTURE.match(s)
         if not s: flush()
+        elif pic:
+            flush(); body.append(_picture(pic.group(2), pic.group(1), pic.group(3), fs))
         elif m:
             flush()
             style = r'\b' if len(m.group(1)) == 1 else r'\b\i'            # # — bold, ## — bold italic

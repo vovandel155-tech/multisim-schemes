@@ -37,12 +37,14 @@ S.noise('VIN',4,0,fstart=20,fstop=20e3,points=100,title='5 Total noise')
 S.noise('VIN',4,0,fstart=20,fstop=20e3,points=100,spectrum=True,title='6 Noise spectrum')
 S.param('Uin',0.2)                                  # VIN amplitude, V (peak)
 S.psweep(['V(4)'],'Uin',[0.1,0.2,0.5,1,2],tstart=0.045,tstop=0.05,tmax=1e-6,ic='dcop',title='7 Output clipping')
+IMG=os.path.join(GALLERY,'..','images')
 S.description('''
 # 1 Circuit and method
 A common-emitter stage: supply *E* = 12 V (V1), divider R_{1} = 47 kOhm, R_{2} = 10 kOhm, collector resistor
 R_{C} = 2.2 kOhm, emitter resistor R_{E} = 1 kOhm, transistor **2N2222**. The input VIN goes through C_{1} = 1 uF,
 CL = 10 nF on the collector limits the band.
 All results come from **Batched**: press Run, one Grapher page per analysis.
+![Figure 1 — The circuit](FIG1)
 ## Analyses
 - 1 Operating point: node voltages, U_{CE}, supply current.
 - 2 Gain at 1 kHz: K = |V(4)/V(2)|, K in dB, input impedance.
@@ -55,5 +57,6 @@ All results come from **Batched**: press Run, one Grapher page per analysis.
 | Band at −3 dB | 20.3 Hz … 7.29 kHz |
 | THD at U_{in} = 0.2 V | 0.035 % |
 | Input noise, 20 Hz…20 kHz | 0.751 uV (10^{-6} V) |
-''')
+![Figure 2 — Frequency response computed in ngspice](FIG2){width=12}
+'''.replace('FIG1',os.path.join(IMG,'batched_all.png')).replace('FIG2',os.path.join(IMG,'batched_all_ac.png')))
 S.build()
