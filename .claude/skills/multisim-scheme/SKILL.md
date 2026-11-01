@@ -38,6 +38,8 @@ Multisim task:
    1. **(recommended)** fetch it from their Multisim: `python3 scripts/order.py "U1;Analog;OPAMP;TL072|TL072CP" …`
       makes `get_parts.zip`; the user unpacks it, closes Multisim, double-clicks `get_parts.bat` (Python 3 needed) and
       sends back the files from `donors_new` — about a minute, nothing to place by hand;
+      `order.py` says NOT ORDERED for a wrong line (one group per line, a placeholder of the same kind) — fix it first;
+      connectors, switches, fuses, beads, MCUs have no placeholder → option 3 for them, in the same question;
    2. an equivalent that is in the catalog — say what changes;
    3. the user places the parts in an empty file and sends it.
 

@@ -34,6 +34,9 @@ file but the block of the part (`samples/ni/parts.bin` + `parts.idx`, `msgen.Par
      steps: unpack it, close Multisim, double-click `get_parts.bat` (needs Python 3 on the PC), then send back the files
      from the `donors_new` folder. About a minute, nothing to place by hand. Placeholders and families — «Any scheme from
      a picture», step 3.
+     `order.py` checks every line and packs nothing while one is wrong (NOT ORDERED): one group per line, the placeholder
+     of the same kind. Connectors, switches, fuses, ferrite beads, microcontrollers have **no placeholder** — for them
+     only option 3 (the user places them by hand), so ask for those in the same question, not after a second round.
   2. an equivalent that is already in the catalog (`registry.py --need`) — say what changes in the circuit;
   3. only if they prefer: they place the parts in an empty Multisim file themselves and send the .ms14.
   When the files come back: `python3 scripts/harvest.py RETURNED_FOLDER -o ./ni_extra`, build with `MSGEN_REGISTRY=./ni_extra`.
@@ -61,7 +64,8 @@ the project root).
    variants separated by `|` — database names often have a suffix (`TIP121|TIP121G`, `BC547|BC547B`, `LM358|LM358N|LM358AD`).
    The template placeholder must be of the same kind: Q1 npn, Q2 pnp, M1/M2 MOS n/p, J1 JFET, D1 diode, Z1 LED, R1, C1, L1,
    U1 5-pin op-amp, U2 7-pin op-amp, U3 digital IC, U4 555 timer, U5 regulator (`scripts/donor_template.py` →
-   `samples/template_replace.ms14`). Multisim groups/families: Transistors (BJT_NPN, BJT_PNP, DARLINGTON_NPN/PNP,
+   `samples/template_replace.ms14`). The group is one name (no `|`); a resistor placeholder becomes only R/L/C — `order.py`
+   refuses other lines and names the right placeholder. Multisim groups/families: Transistors (BJT_NPN, BJT_PNP, DARLINGTON_NPN/PNP,
    MOS_ENH_N/P, POWER_MOS_N/P, JFET_N/P), Diodes (DIODE, ZENER, LED, SWITCHING_DIODE, SCHOTTKY_DIODE, FWB),
    Analog (OPAMP, COMPARATOR), TTL (74STD, 74LS), CMOS (CMOS_5V), Mixed (TIMER), Power (VOLTAGE_REGULATOR).
    Ask the user to close Multisim and run `get_parts.bat`: `scripts/donors.vbs` (COM `ReplaceComponent`,
