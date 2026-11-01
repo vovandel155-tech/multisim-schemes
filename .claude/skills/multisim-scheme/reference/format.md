@@ -1,5 +1,20 @@
 # The .ms14 format and the generator internals
 
+Read it to change the core of the generator or to take apart someone else's file. The first section lists the rules learned in Multisim — keep them.
+
+## Rules (found by checking in Multisim — do not break them)
+- **Compress only with `blast.write_ms2()`** (a real PKWARE implode). Multisim does not open a literal-only file.
+- **Read and write XML only via `msgen.Doc` / `msgen.serialize`.** They keep line breaks inside attributes; without them Multisim silently refuses the file.
+- **`finalize(..., rename=False)`.** Renaming the project inside the file breaks it. `Scheme` already does this.
+- **Custom sheet ≥ 14×11 inches.** The standard 960×720 is too small. `build()` picks the size and centers the scheme; do not ask the user about the sheet size.
+- **The interactive simulation step TMAX is set manually (1e-5 s).** With an «automatic» step a CMOS scheme where no source delivers current (output 0) does not start: «This circuit has no power sources…».
+- **Subcircuits.** The symbol is stored in every instance, and `SchottkyLib`/`MultiEmitterLib` draw it themselves. Net name conflicts between subcircuits (the «Resolve Net Name Conflict» dialog) are resolved in advance by `finalize` (`net_names`).
+- **Switches.** Animation frames move together with the symbol (`place()`), otherwise the switch «jumps» when pressed.
+- **GUIDs are unique and different in every file.** Every wire, pin and instance has its own GUID (as in Multisim files), and `finalize` replaces all GUIDs of the document with new ones derived from the file name (`renew_guids`). Multisim confuses schemes with identical GUIDs (e.g. built on one base) when they are open at the same time: the multimeter stops the simulation, readings freeze, opening hangs.
+- **Instrument data.** Every instrument has an entry in the main sheet `InstrumentsData` «XMM1#1/<sheet name>:» (`instruments`), as in Multisim files; without it the multimeter stopped the simulation.
+- **Deterministic build.** Running again gives the same file. Handy for regression: rebuild and compare sha1.
+
+
 A reference for changing the core (`scripts/msgen.py`) and for taking Multisim files apart. `SKILL.md` is enough for normal work.
 
 ## The .ms14 container

@@ -1,0 +1,13 @@
+{
+  "skills": ["multisim-scheme"],
+  "query": "Build a two-input CMOS NOR gate (two p-MOS in series to VDD, two n-MOS in parallel to ground) in Multisim, with input switches and a multimeter on the output, and show me its truth table.",
+  "files": [],
+  "answers": "Accept the defaults (5 V supply).",
+  "expected_behavior": [
+    "Uses NMOS/PMOS with the substrate pins tied as in the rules (p-MOS substrate to VDD, n-MOS to ground) or the cmos_nor2 block",
+    "Inputs are switches S1/S2 to VCC/ground, the output is the multimeter XMM1",
+    "One common ground bus at the bottom; build() report: overlaps none, check: READY",
+    "The 5 V supply is stated as intended (the VCC warning is explained, not hidden)",
+    "The ngspice truth table says NOR and is shown to the user"
+  ]
+}

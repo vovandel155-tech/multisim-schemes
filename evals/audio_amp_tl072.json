@@ -1,0 +1,16 @@
+{
+  "skills": ["multisim-scheme"],
+  "query": "Task 1. Build in Multisim an audio amplifier on an op-amp with a push-pull output: dual supply ±12 V (two separate sources, not the VCC symbol); op-amp TL072 (if it is not in the catalog, tell me how to get it and offer a replacement before building); non-inverting gain 11 (R1 = 10 kOhm, R2 = 1 kOhm), input coupling capacitor 1 uF and 100 kOhm to ground; output stage BD139/BD140 with two 1N4148 bias diodes and 0.47 Ohm emitter resistors, feedback from the output of the stage; 8 Ohm load; the 1 kHz input amplitude is the circuit parameter Uвх = 0.5 V. Batched: 1) operating point: output, bases of the output transistors, quiescent current of the output stage, current of each supply; 2) gain at 1 kHz in times and in dB, input resistance; 3) frequency response 10 Hz – 1 MHz in dB; 4) transient at Uвх = 0.5 V: output voltage and instantaneous load power; 5) harmonics and THD at 0.5 V; 6) sweep Uвх = 0.2, 0.5, 0.8, 1.0, 1.2 V — where clipping starts; 7) input-referred noise 20 Hz – 20 kHz. A description in coursework style: purpose, parts, gain formulas with subscripts, a table of expected results per analysis, a conclusion; three heading levels; ask me which pictures. Show the whole build report and explain every warning. Task 2 (after task 1): in the finished file change only the analyses — remove the Uвх sweep, add a 20 Hz – 20 kHz linear-sweep frequency response — and append a section about the Batched list to the end of the description; do not touch the circuit.",
+  "files": [],
+  "answers": "Choose get_parts for the missing parts; pictures: graphs from ngspice.",
+  "expected_behavior": [
+    "Checks the parts with registry.py --need and offers get_parts (order.py → get_parts.zip) as the first, recommended option",
+    "Uses two DC_POWER sources of 12 V; I(V1) and I(V2) are in the operating point",
+    "The bias diodes conduct at rest (anode of D1 at the npn base, cathode at the op-amp output; anode of D2 at the op-amp output, cathode at the pnp base) and the answer explains how the quiescent current is set",
+    "The gain in dB is an analysis variable (db(...)), not only a formula in the description",
+    "The quiescent current is (V(emitter)-V(out))/0.47, not V(emitter)/0.47",
+    "The circuit parameter is named as asked (Uвх) or the answer says why not; the source label shows the parameter without a leftover unit",
+    "Subscripts in the description use braces (K_{U}); check.py reports no markup left as text",
+    "Task 2 uses analyses.rewrite and describe.rewrite(append=True); the circuit is unchanged (same nets and values) and check.py says READY"
+  ]
+}

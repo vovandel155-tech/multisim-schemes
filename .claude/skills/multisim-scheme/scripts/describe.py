@@ -219,3 +219,5 @@ def rewrite(src, dst, markup, append=False):
         raw = base64.b64decode(re.sub(r'\s', '', old.get('BaseSixtyFour'))).decode('latin1')
         old.set('BaseSixtyFour', desc_bytes(append_rtf(raw, markup)))
     blast.write_ms2(msgen.serialize(R), dst)
+    import check
+    check.main(dst)                                       # READY / NOT READY for the rewritten file

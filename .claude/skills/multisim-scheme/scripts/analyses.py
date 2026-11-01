@@ -325,6 +325,8 @@ def rewrite(src, dst, batch):
     R = msgen.Doc(blast.read_ms(src)).root
     add_batched(R, batch.items, replace=True)
     blast.write_ms2(msgen.serialize(R), dst)
+    import check
+    check.main(dst)                                       # READY / NOT READY for the rewritten file
 
 
 KIND_NAMES = {'OP': 'DC Operating Point', 'PHASOR': 'Single Frequency AC', 'AC': 'AC Sweep', 'TRAN': 'Transient',

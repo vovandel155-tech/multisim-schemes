@@ -288,6 +288,12 @@ class Scheme:
         except FileNotFoundError: print('   ngspice: not installed (apt-get install ngspice)')
         except (Exception,SystemExit) as e: print('   ngspice: not computed (%s)'%(e or type(e).__name__))
         s.warnings=warn; s.valid=ok
+        import check    # the gate before giving the file away: analyses, supply, description, layout
+        e,w=check.check(os.path.join(s.outdir,s.name+'.ms14'))
+        for t in list(dict.fromkeys(e)): print('   ERROR  ',t)
+        for t in list(dict.fromkeys(w)): print('   WARNING',t)
+        print('   check:','NOT READY — fix every ERROR and build again' if e else 'READY'+(' — tell the user about each WARNING' if w else ''))
+        s.ready=not e
         return s
 
 def dec_pin(p): return geom.dec(p)

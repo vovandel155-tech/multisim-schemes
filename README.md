@@ -86,7 +86,7 @@ picture ─► script (parts on grid cells + wires) ─► build()
 ```
 
 The `.ms14` format is a compressed XML document; the skill writes it the same way Multisim does, down to unique GUIDs
-per file and per-instrument settings. [`reference.md`](.claude/skills/multisim-scheme/reference.md) documents the
+per file and per-instrument settings. [`reference/format.md`](.claude/skills/multisim-scheme/reference/format.md) documents the
 format and the internals; [`SKILL.md`](.claude/skills/multisim-scheme/SKILL.md) is the full manual.
 
 ### Getting a part that is not in the catalog
@@ -105,9 +105,10 @@ digital electronics textbook, and demos of catalog parts, instruments, probes, b
 
 | Path | What is there |
 |---|---|
-| `.claude/skills/multisim-scheme/` | the skill: `SKILL.md`, `scripts/`, `samples/`, `examples/`, `reference.md` |
+| `.claude/skills/multisim-scheme/` | the skill: `SKILL.md` (workflow), `reference/` (details by topic), `scripts/`, `samples/`, `examples/` |
 | `.claude/skills/multisim-scheme/samples/ni/` | the part catalog: `catalog.json`, `catalog.txt`, `parts.bin` + `parts.idx` |
 | `gallery/` | verified circuits: scripts, `.ms14` files, preview images |
+| `evals/` | test scenarios for the skill, taken from real failures of a weaker model |
 | `multisim-scheme.zip` | the skill packed for upload to claude.ai |
 | `get_parts.bat` | part extraction from your Multisim (wrapper for the skill's bat) |
 
@@ -199,7 +200,7 @@ endorsed by NI; part data in the catalog was taken from files saved by Multisim 
 сжимается PKWARE DCL implode в `.ms14`, затем проверки: ссылки, наложения, PNG-превью, ngspice.
 
 Формат `.ms14` — сжатый XML; скилл пишет его так же, как Multisim, вплоть до уникальных GUID в каждом файле и настроек
-каждого прибора. Формат и устройство описаны в [`reference.md`](.claude/skills/multisim-scheme/reference.md), полное
+каждого прибора. Формат и устройство описаны в [`reference/format.md`](.claude/skills/multisim-scheme/reference/format.md), полное
 руководство — [`SKILL.md`](.claude/skills/multisim-scheme/SKILL.md).
 
 **Если детали нет в каталоге:**
@@ -218,9 +219,10 @@ endorsed by NI; part data in the catalog was taken from files saved by Multisim 
 
 | Путь | Что там |
 |---|---|
-| `.claude/skills/multisim-scheme/` | скилл: `SKILL.md`, `scripts/`, `samples/`, `examples/`, `reference.md` |
+| `.claude/skills/multisim-scheme/` | скилл: `SKILL.md` (порядок работы), `reference/` (подробности по темам), `scripts/`, `samples/`, `examples/` |
 | `.claude/skills/multisim-scheme/samples/ni/` | каталог деталей: `catalog.json`, `catalog.txt`, `parts.bin` + `parts.idx` |
 | `gallery/` | проверенные схемы: скрипты, файлы `.ms14`, картинки |
+| `evals/` | тестовые сценарии для скилла по реальным ошибкам слабой модели |
 | `multisim-scheme.zip` | скилл, упакованный для загрузки в claude.ai |
 | `get_parts.bat` | добыча деталей из вашего Multisim (обёртка для bat-файла скилла) |
 
