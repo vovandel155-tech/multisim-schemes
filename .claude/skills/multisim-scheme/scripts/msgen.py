@@ -694,6 +694,10 @@ class Builder:
         for pl in polys:
             a,b=key(pl[0]),key(pl[-1]); par[f(a)]=f(b)
         # also nets named
+        named={}                             # net names given by the script: key of a terminal or junction -> name
+        for t,nm in getattr(s,'netnames',[]):
+            t=('J',(t[1]+ox)*g,(t[2]+oy)*g) if t[0]=='J' else t
+            named[key(t)]=nm
         groups={}
         for pl in polys:
             for t in (pl[0],pl[-1]): groups.setdefault(f(key(t)),set()).add(key(t))
@@ -715,8 +719,12 @@ class Builder:
                 if m[0]!='J' and s.parts[m[0]].get('global'): names.add(s.parts[m[0]]['global'])
             if {'VCC','0'}<=names:
                 raise ValueError('short circuit VCC — ground: %s'%', '.join(sorted('%s.%s'%(m[0],m[1]) for m in mem if m[0]!='J')))
+            given=sorted({named[m] for m in mem if m in named})
+            if len(given)>1: raise ValueError('one net, two names: %s'%', '.join(given))
+            if given and names: raise ValueError('net %s is %s — a supply or ground net keeps its own name'%(given[0],names.pop()))
             if 'VCC' in names: nm='VCC'
             elif '0' in names: nm='0'
+            elif given: nm=given[0]
             else: num[0]+=1; nm=str(num[0])
             node=copy.deepcopy(s.t_node); nidn=nid(); node.set('CiID',nidn)
             node[0].set('LocalName','&ASC'+nm); node[0].set('Circuit',s.cid)
@@ -725,7 +733,7 @@ class Builder:
             nt=copy.deepcopy(s.t_ntext); ntid=nid(); nt.set('ID',ntid)
             ll=nt[0].find('Links')
             for k in list(ll): ll.remove(k)
-            nets.append(dict(node=node,nt=nt,name=nm,mem=mem,ntpos=None))
+            nets.append(dict(node=node,nt=nt,name=nm,mem=mem,ntpos=None,given=bool(given),label=None))
             netid[root_]=nets[-1]
             D.el.append(node); ET.SubElement(s.circ[0].find('Nodes'),'Item',{'CiID':nidn})
             for m in sorted(mem,key=str):            # order does not depend on string hashes — the build is reproducible
@@ -759,6 +767,10 @@ class Builder:
             for (x,y) in coords: ET.SubElement(pts,'Item',{'X':str(x),'Y':str(y)})
             for g in c.iter('Item'):
                 if g.get('Guid'): g.set('Guid',guid())   # every wire has its own label (as in Multisim files)
+            if net['given'] and net['label'] is None:   # a name given by the script: the first wire carries it, as Multisim
+                el=c.find('ElectricalObject/ModifierInfo/Element')   # writes a name set in Net properties
+                el.set('NetModifier','&ASCNI_EWB_NET_NAME'); it=el.find('Item'); it.set('Value',enc(net['name']))
+                c.set('ShowWhenNetSet','1'); net['label']=it.get('Guid')
             ET.SubElement(net['nt'][0].find('Links'),'Item',{'ID':lid,'Class':'CIITLinkComp'})
             if net['ntpos'] is None: net['ntpos']=coords[0]
             D.objs.append(L)
@@ -842,6 +854,23 @@ def net_names(b):
                 items[gg]=ET.SubElement(it,'Items')
             ET.SubElement(items[gg],'CSchDesignNetLabel',{'Class':'CSchDesignNetLabel','Modifier':'16','Value':'',
                 'ID':conn[enc(pin)],'Priority':'1' if k else '0','LastOverruleName':win,'LastNetName':win,'LastLocalName':enc(pin)})
+
+def given_net_names(b):
+    """Nets named by the script (Scheme.net) keep their names in Multisim: the wire label NI_EWB_NET_NAME (set in
+    Builder.wires) and a NetLabels entry of the main sheet with Modifier=4, as Multisim writes a name set in Net
+    properties. Without a name Multisim numbers the nets itself on opening — not in the order of the file."""
+    nets=[n for n in getattr(b,'nets',[]) if n.get('given')]
+    if not nets: return
+    R=b.D.root; nl=R.find('.//CDesignNetContainer/NetLabels')
+    main_sc=next(g.get('GUID') for g in R.iter('Group') if g.get('Class')=='CSheetComponent')
+    main_sh=next(ds.get('SheetID') for ds in R.iter('DesignSheet') if b.D.h in set(ds.iter()))
+    proxy='&ASC%s/%s/'%(main_sc,main_sh)
+    it=next((i for i in nl if i.get('TreeInstanceProxy')==proxy),None)
+    if it is None: it=ET.SubElement(nl,'Item',{'TreeInstanceProxy':proxy}); ET.SubElement(it,'Items')
+    for n in nets:
+        nm=enc(n['name'])
+        ET.SubElement(it.find('Items'),'CSchDesignNetLabel',{'Class':'CSchDesignNetLabel','Modifier':'4','Value':'',
+            'ID':n['label'],'Priority':'0','LastOverruleName':nm,'LastNetName':nm,'LastLocalName':nm})
 
 GUID_RE=re.compile(r'\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}')
 def renew_guids(R,seed):
@@ -972,6 +1001,7 @@ def finalize(b,title,outpath,rename=False,hb=True,preview=True,netext=True,msext
                 for e in x.iter(tag):
                     for k in list(e): e.remove(k)
     net_names(b)
+    given_net_names(b)
     instruments(b)
     if description:
         import describe

@@ -19,9 +19,10 @@ S.wires([
  [('V1','2'),(0,31),J(8,31)],[('VIN','2'),J(8,31)],[J(8,31),J(16,31)],
  [('R2','2'),J(16,31)],[J(16,31),g],[J(16,31),(28,31),('RE','2')],
 ])
-# nets of this build: 2 — input (VIN +), 3 — base, 4 — collector (output), 5 — emitter.
-# VIN: AC analysis magnitude 1 V, phase 0. Expected at 1 kHz (ngspice): V(2) 1 V ∠0°, V(4) 2.138 V ∠−179.9°,
-# gain V(4)/V(2) 2.138 ∠−179.9° = 6.598 dB, I(VIN) 127.8 uA ∠−179.8°, V(2)/I(VIN) 7.822 kOhm ∠179.8°
+# named nets (Multisim renumbers unnamed ones on opening, so analyses refer to names): in — VIN +, out — collector
+S.net('in',('VIN','1')); S.net('out',('Q1','C'))
+# VIN: AC analysis magnitude 1 V, phase 0. Expected at 1 kHz (ngspice): V(in) 1 V ∠0°, V(out) 2.138 V ∠−179.9°,
+# gain V(out)/V(in) 2.138 ∠−179.9° = 6.598 dB, I(VIN) 127.8 uA ∠−179.8°, V(in)/I(VIN) 7.822 kOhm ∠179.8°
 # (the sign: SPICE counts the current flowing into the + pin, so the input impedance comes out at 180°).
-S.phasor(['V(2)','V(4)','V(4)/V(2)','db(V(4)/V(2))','I(VIN)','V(2)/I(VIN)'],freq=1000,title='Gain at 1 kHz')
+S.phasor(['V(in)','V(out)','V(out)/V(in)','db(V(out)/V(in))','I(VIN)','V(in)/I(VIN)'],freq=1000,title='Gain at 1 kHz')
 S.build()

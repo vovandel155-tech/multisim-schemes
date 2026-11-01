@@ -2,7 +2,7 @@ import sys, os; GALLERY=os.path.dirname(os.path.abspath(__file__)); sys.path.ins
 from scheme import *
 # Analyses: DC Operating Point in Batched (Simulate → Analyses and Simulation → Batched → Run).
 # Common-emitter bias: V1 12 V, divider R1 47k / R2 10k sets the base, RC 2.2k, RE 1k.
-# Expected (ngspice): V(1) 12 V, V(2) base 2.039 V, V(3) collector 8.913 V, V(4) emitter 1.411 V, V(3)-V(4) 7.502 V,
+# Expected (ngspice): V(supply) 12 V, V(base) 2.039 V, V(coll) 8.913 V, V(emit) 1.411 V, V(coll)-V(emit) 7.502 V,
 # I(V1) −1.615 mA (SPICE counts the current flowing into the + pin).
 S=Scheme('batched_op',outdir=GALLERY)
 P=S.part
@@ -17,6 +17,7 @@ S.wires([
  [('RC','2'),('Q1','C')],[('Q1','E'),('RE','1')],
  [('V1','2'),(4,31),J(16,31)],[('R2','2'),J(16,31)],[J(16,31),g],[J(16,31),(28,31),('RE','2')],
 ])
-# nets of this build: 1 — V1+ / R1 / RC, 2 — base, 3 — collector, 4 — emitter
-S.op(['V(1)','V(2)','V(3)','V(4)','V(3)-V(4)','I(V1)'],title='Operating point')
+# named nets (Multisim renumbers unnamed ones on opening, so analyses refer to names)
+S.net('supply',('V1','1')); S.net('base',('Q1','B')); S.net('coll',('Q1','C')); S.net('emit',('Q1','E'))
+S.op(['V(supply)','V(base)','V(coll)','V(emit)','V(coll)-V(emit)','I(V1)'],title='Operating point')
 S.build()

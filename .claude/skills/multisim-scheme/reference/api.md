@@ -16,6 +16,7 @@ Read it when writing a scheme script. Paths are relative to the skill folder (`S
   - `value` — resistor value (`'4k'`, `'130'`, `'1.6k'`);
   - `label` — `'auto'` / `'right'` / `'left'` / `'top'` / `'bottom'` / `None`;
   - `kind` — a type from `KINDS` or a catalog part name (`'2N3904'`, `'LM358N'`, `'FGEN'`); `subst={'.2':'10'}` — parameters.
+- `net(name, t)` — name the net of terminal `t` (`('Q1','C')` or `J(x,y)`); Multisim keeps the name, analyses use `V(name)`. MUST for every net an analysis refers to.
 - `probe(name, x, y, kind='V', ref=None)` — a probe on a wire (see «Probes» below).
 - `vcc(x,y,volts=None)`, `gnd(x,y)` — a VCC symbol (5 V or `volts`; all VCC of a scheme are one net) or a ground with its pin at (x, y); return a terminal.
 - `switch(name, x, y, vcc=2, gnd=2, right=False)` — a switch to VCC/ground. Common pin at (x, y), the VCC/ground pins 7 cells to the left (`right=True` — to the right), with their own VCC and GND symbols.

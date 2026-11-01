@@ -26,7 +26,7 @@ Multisim task:
 - [ ] 3 Script written: layout as in the picture, one ground bus, supply voltages explicit
 - [ ] 4 build() report clean: ID references OK, overlaps none, supply right, preview looked at
 - [ ] 5 The circuit really works: spice.run on the built file, every part does its job
-- [ ] 6 Analyses (if asked): every quantity from step 1 is an output variable
+- [ ] 6 Analyses (if asked): every quantity from step 1 is an output variable on a NAMED net
 - [ ] 7 Expected values: spice.run on the built file only
 - [ ] 8 Description (if asked): pictures agreed with the user, numbers from step 7
 - [ ] 9 check: READY → give the file, the expected values and every WARNING
@@ -53,7 +53,10 @@ Multisim task:
    `python3 scripts/spice.py out.ms14 "op; print all"` (and `tran`, `ac` as needed). If it worked only after you turned a
    part around or added one, find out why, tell the user, and check that each part does what the text says about it
    (bias diodes conduct at rest, a bias resistor sets the current…).
-6. **Analyses** — [reference/analyses.md](reference/analyses.md). Every quantity from step 1 MUST be an output variable
+6. **Analyses** — [reference/analyses.md](reference/analyses.md). **Every net an analysis refers to MUST be named:**
+   `S.net('out', ('Q1','C'))`, then `V(out)`. Multisim renumbers unnamed nets on opening — not in the order of the
+   build report — so `V(11)` reads another node (verified: a model's bridge amplifier reported the supply rail as its
+   output). `check` reports a numbered net in an analysis as an ERROR. Every quantity from step 1 MUST be an output variable
    (a gain in dB is `db(V(out)/V(in))` in Single Frequency AC, not a formula in the description). In AC Sweep MUST be
    `V(out)/V(in)` with `vscale='db'`: `db(…)` on the Decibel axis is dB of dB (verified: 20.8 dB showed as 26.4). Currents through a resistor are
    `(V(a)-V(b))/R`. A source amplitude set by a circuit parameter: `subst={'.2':'Uin','UinVpk':'Uin'}`.
@@ -70,6 +73,7 @@ Multisim task:
 - Never silently substitute a part, a value or a supply: say what changed and why.
 - Never give away a file that `check` calls NOT READY, and never hide a WARNING.
 - Numbers for the user only from `spice.run` on the very file you give.
+- Analyses and probes refer to named nets only (`S.net`), never to the numbers of the build report.
 - Missing parts: `get_parts` (`order.py`) is offered first.
 - Read and write `.ms14` only through the skill's scripts (`Scheme`, `analyses.rewrite`, `describe.rewrite`): the format
   breaks silently otherwise — [reference/format.md](reference/format.md).
@@ -91,7 +95,8 @@ S.wires([
  [('RC','2'), ('Q1','C')], [('Q1','E'), ('RE','1')],
  [('V1','2'), (0,31), J(16,31)], [('R2','2'), J(16,31)], [J(16,31), g], [J(16,31), (28,31), ('RE','2')],
 ])
-S.op(['V(2)', 'V(3)', 'V(3)-V(4)', 'I(V1)'], title='1 Operating point')   # Batched analyses — reference/analyses.md
+S.net('base', ('Q1','B')); S.net('out', ('Q1','C')); S.net('emit', ('Q1','E'))      # names for the analyses
+S.op(['V(base)', 'V(out)', 'V(out)-V(emit)', 'I(V1)'], title='1 Режим покоя')         # Batched — reference/analyses.md
 S.build()                                                # report + check: READY / NOT READY
 ```
 Run from the project folder: `python3 my_scheme.py`. Pin offsets: `python3 scripts/scheme.py pins [PART…]`.

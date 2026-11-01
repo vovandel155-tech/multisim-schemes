@@ -6,6 +6,12 @@ Read it when the user wants analyses in the file or numbers to compare with Mult
 - Analyses (Batched) — `scripts/analyses.py`
 
 ## Analyses (Batched) — `scripts/analyses.py`
+**Named nets.** Multisim numbers unnamed nets itself when it opens a file, not in the order of the build report, so a
+variable `V(11)` may read the supply rail. Name every net an analysis refers to — `S.net('out', ('Q1','C'))` or
+`S.net('mid', J(16,16))` — and write `V(out)`; the name is stored the way Multisim stores a name set in Net properties
+(wire label `NI_EWB_NET_NAME` + a `NetLabels` entry with Modifier 4) and is shown on the sheet. Names: a Latin letter,
+then letters, digits, `_`. A file saved by Multisim (the user's own) already has Multisim's names — use them as they are.
+
 **Before giving the file away:** every quantity the user asked for is an output variable of some analysis (a gain in
 dB — `db(V(out)/V(in))` in Single Frequency AC; in AC Sweep give `V(out)/V(in)` and `vscale='db'` — `db(…)` on a Decibel axis is
 dB of dB, verified in Multisim: 20.8 dB showed as 26.4 and the phase as 0; a current through a resistor — `(V(a)-V(b))/R`, not `V(a)/R`); every net and source named in

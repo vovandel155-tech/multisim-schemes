@@ -1,5 +1,7 @@
 {
-  "skills": ["multisim-scheme"],
+  "skills": [
+    "multisim-scheme"
+  ],
   "query": "Build a bridge (BTL) power amplifier in Multisim: single 19.5 V supply, 8 Ohm load, TIP121/TIP127 output transistors, 1 kHz sine input. Add 5 analyses in Batched (operating point, gain at 1 kHz, frequency response, harmonics and THD, noise) and a circuit description with the results of the analyses.",
   "files": [],
   "answers": "If asked for the original schematic, say: take a classic bridge amplifier from the literature.",
@@ -12,6 +14,8 @@
     "Fourier max step is at most 1 us for 1 kHz and 9 harmonics; AC sweep has about 100 points per decade",
     "The description has no markup left as text (#, ###, **, K_U) and describes exactly this file",
     "build() report: overlaps none and check: READY; no warning is called cosmetic",
-    "Asks which pictures to put into the description before inserting any"
+    "Asks which pictures to put into the description before inserting any",
+    "Every net an analysis refers to is named with S.net (V(outa), not V(11)); check reports no numbered net",
+    "A transient with TMAX = 1e-7 has Maximum number of points raised (max_points) so that (TSTOP−TSTART)/TMAX fits"
   ]
 }

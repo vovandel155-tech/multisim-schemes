@@ -141,7 +141,7 @@ TMAX=1e-5           # interactive simulation step, s (instead of «automatic» �
 class Scheme:
     def __init__(s,name,sheet_min=SHEET_MIN,margin=MARGIN_IN,outdir=None,tmax=TMAX):
         s.name=name; s.sheet_min=sheet_min; s.margin=margin; s.outdir=outdir or OUT; s.tmax=tmax
-        s.parts=[]; s.W=[]; s.cnt={}; s.probes=[]; s.batch=AN.Batch(); s.params={}; s.desc=None
+        s.parts=[]; s.W=[]; s.cnt={}; s.probes=[]; s.batch=AN.Batch(); s.params={}; s.desc=None; s.netnames=[]
     # ---------- description ----------
     def part(s,name,kind,pin,x,y,rot=0,mirror=False,value=None,label='auto',refdes=None,glob=None,subst=None):
         """element `kind` placed so that its pin `pin` lands in cell (x, y); label: 'auto' | right/left/top/bottom | None"""
@@ -201,6 +201,13 @@ class Scheme:
     def tran(s,*a,**k): s.batch.tran(*a,**k)
     def fourier(s,*a,**k): s.batch.fourier(*a,**k)
     def noise(s,*a,**k): s.batch.noise(*a,**k)
+    def net(s,name,t):
+        """give the net of terminal t (('Q1','E') or J(x,y)) a name: Multisim keeps it, analyses use V(name).
+        MUST for every net an analysis refers to — Multisim renumbers unnamed nets on opening"""
+        assert re.fullmatch(r'[A-Za-z][A-Za-z0-9_]*',name),'net name: a Latin letter, then letters, digits, _ (%r)'%name
+        assert all(n.lower()!=name.lower() for _,n in s.netnames),'net name %s used twice'%name
+        s.netnames.append((t,name.lower()))
+        return t
     def description(s,markup):
         """the circuit description (Tools → Description Box Editor) from simple markup — see describe.py:
         # heading, ## subheading, paragraphs, - bullets, | table | rows |, **bold**, *italic*, R_{н}, 10^{-3}"""
@@ -233,6 +240,7 @@ class Scheme:
                     label=None if p['label']=='auto' else p['label'],refdes=p['refdes'],glob=p['glob'],subst=p['subst'])
             b.parts[p['name']]['kind']=p['kind']
             if p['kind'] in INST: b.parts[p['name']]['inst']=INST[p['kind']]
+        b.netnames=s.netnames
         b.wires(s.W)
         for p in s.probes: b.probe(p['name'],p['kind'],p['x'],p['y'],ref=p['ref'])
         autolabel(b,[p for p in s.parts if p['label']=='auto'])

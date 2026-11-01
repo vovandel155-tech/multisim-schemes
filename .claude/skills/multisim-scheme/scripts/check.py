@@ -54,7 +54,8 @@ def check(path):
     D = msgen.Doc(raw)
     v = validate.check(D.root)
     if v['dup_ids'] or v['dup_ci'] or v['bad']: err.append('broken ID references: %s' % v)
-    if 'CMsPreviewExtension' in x:      # saved by Multisim: the user's own drawing, labels placed by Multisim itself
+    built = 'CMsPreviewExtension' not in x      # built by the skill (a file saved by Multisim has its preview)
+    if not built:      # saved by Multisim: the user's own drawing, labels placed by Multisim itself
         warn.append('layout not checked: the file was saved by Multisim (only files built by the skill are checked)')
     else:
         sc = geom.Scene(D.objs, D.el)
@@ -94,6 +95,10 @@ def check(path):
             for var in sel:
                 ns, srcs = refs(var['NAME'])
                 bad = [n for n in ns if n.lower() not in nets] + ['I(%s)' % s.upper() for s in srcs if s.lower() not in parts]
+                unnamed = [n for n in ns if built and n.isdigit() and n != '0' and n.lower() in nets]
+                if unnamed: err.append('%s %s: %s refers to net %s by number — Multisim renumbers unnamed nets on opening, '
+                                       'so it reads another node; name the net: S.net(\'out\', terminal) and use V(out)' % (
+                                           b.key, t, AN.show_var(var['NAME']), ', '.join(unnamed)))
                 if bad: err.append('%s %s: %s names %s — not in the circuit (nets: %s)' % (
                     b.key, t, AN.show_var(var['NAME']), ', '.join(bad), ', '.join(sorted(nets, key=lambda s: (len(s), s)))))
             a = b.get('ANALYSIS')
@@ -102,6 +107,13 @@ def check(path):
                 if tm == 'calculate' or float(tm) > 1 / (100 * n * f) * 1.0001:
                     warn.append('%s %s: max step %s is coarse for %d harmonics of %g Hz — use tmax ≤ %g' % (
                         b.key, t, tm, n, f, 1 / (100 * n * f)))
+            tr = a if b.key == 'TRAN' else a.get('Tran') if b.key in ('FOUR', 'PSWEEP') else None
+            if tr is not None and tr['TMAX'] != 'calculate':
+                need = (float(tr['TSTOP']) - float(tr['TSTART'])) / float(tr['TMAX'])
+                if need > float(b['MAX_POINTS']):
+                    err.append('%s %s: %.0f points at max step %s exceed Maximum number of points %s — Multisim stops with '
+                               'an error; pass max_points=%d' % (b.key, t, need, tr['TMAX'], b['MAX_POINTS'],
+                                                                10 ** len(str(int(need)))))
             if b.key == 'AC' and a['vscale'] == '2' and any(v['NAME'].lower().startswith('db(') for v in sel):
                 err.append('AC %s: db(…) on a Decibel axis — Multisim takes dB of dB (20.8 dB shows as 26.4, the phase is 0); '
                            'give V(out)/V(in) and keep the Decibel scale' % t)
@@ -116,6 +128,8 @@ def check(path):
                 for k in ('OutputNode', 'ReferenceNode'):
                     n = a[k].lstrip('$').lower()
                     if n and n not in nets: err.append('NOISE %s: %s %s is not a net of the circuit' % (t, k, a[k]))
+                    elif built and n.isdigit() and n != '0':
+                        err.append('NOISE %s: %s is net %s by number — name it with S.net (Multisim renumbers it)' % (t, k, n))
             if b.key == 'PSWEEP' and a['SweepType'] == '3':
                 p = AN.text(a.get('VariableParamToSweep')['name'])
                 if p.lower() not in {n.lower() for n in names}: err.append('PSWEEP %s sweeps %s — no such circuit parameter' % (t, p))
