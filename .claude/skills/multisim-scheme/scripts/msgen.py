@@ -770,7 +770,8 @@ class Builder:
             if net['given'] and net['label'] is None:   # a name given by the script: the first wire carries it, as Multisim
                 el=c.find('ElectricalObject/ModifierInfo/Element')   # writes a name set in Net properties
                 el.set('NetModifier','&ASCNI_EWB_NET_NAME'); it=el.find('Item'); it.set('Value',enc(net['name']))
-                c.set('ShowWhenNetSet','1'); net['label']=it.get('Guid')
+                net['label']=it.get('Guid')     # ShowWhenNetSet stays 0: shown, the name came out twice on one-wire nets
+                                                # and not at all on the others (checked in Multisim)
             ET.SubElement(net['nt'][0].find('Links'),'Item',{'ID':lid,'Class':'CIITLinkComp'})
             if net['ntpos'] is None: net['ntpos']=coords[0]
             D.objs.append(L)

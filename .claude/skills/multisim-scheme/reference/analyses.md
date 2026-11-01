@@ -9,7 +9,8 @@ Read it when the user wants analyses in the file or numbers to compare with Mult
 **Named nets.** Multisim numbers unnamed nets itself when it opens a file, not in the order of the build report, so a
 variable `V(11)` may read the supply rail. Name every net an analysis refers to — `S.net('out', ('Q1','C'))` or
 `S.net('mid', J(16,16))` — and write `V(out)`; the name is stored the way Multisim stores a name set in Net properties
-(wire label `NI_EWB_NET_NAME` + a `NetLabels` entry with Modifier 4) and is shown on the sheet. Names: a Latin letter,
+(wire label `NI_EWB_NET_NAME` + a `NetLabels` entry with Modifier 4); it is not shown on the sheet (verified in
+Multisim: the analyses see the names, the drawing stays as it was). Names: a Latin letter,
 then letters, digits, `_`. A file saved by Multisim (the user's own) already has Multisim's names — use them as they are.
 
 **Before giving the file away:** every quantity the user asked for is an output variable of some analysis (a gain in
