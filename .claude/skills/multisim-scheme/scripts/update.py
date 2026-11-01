@@ -58,6 +58,9 @@ def update():
         print('update unavailable (%s: %s) — using version %s from the zip: %s'%(type(e).__name__,e,work['version'],work['note']))
         print('  (needed: public repository %s and network access to raw.githubusercontent.com in the claude.ai settings)'%work['repo'])
         print('SKILL_DIR='+WORK); return WORK
+    if remote.get('version',0)<work['version']:       # a newer zip under test: never roll it back to an older GitHub version
+        print('skill version %s is newer than GitHub (%s) — not updated: %s'%(work['version'],remote.get('version'),work['note']))
+        print('SKILL_DIR='+WORK); return WORK
     changed=[f for f,h in remote['files'].items() if not os.path.exists(os.path.join(WORK,f)) or sha1(os.path.join(WORK,f))!=h]
     gone=[f for f in work.get('files',{}) if f not in remote['files']]
     try:
