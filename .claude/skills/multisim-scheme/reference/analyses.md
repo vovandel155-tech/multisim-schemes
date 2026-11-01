@@ -7,7 +7,8 @@ Read it when the user wants analyses in the file or numbers to compare with Mult
 
 ## Analyses (Batched) — `scripts/analyses.py`
 **Before giving the file away:** every quantity the user asked for is an output variable of some analysis (a gain in
-dB — `db(V(out)/V(in))`; a current through a resistor — `(V(a)-V(b))/R`, not `V(a)/R`); every net and source named in
+dB — `db(V(out)/V(in))` in Single Frequency AC; in AC Sweep give `V(out)/V(in)` and `vscale='db'`, not `db(…)` on a
+Decibel axis; a current through a resistor — `(V(a)-V(b))/R`, not `V(a)/R`); every net and source named in
 a variable exists — `check.py` reports a variable that names a missing net or source as an ERROR.
 Simulate → Analyses and Simulation → **Batched**: a list of analyses saved in the file; the user presses **Run** and
 gets one Grapher page per analysis (its title is the page name). The skill writes the list; Batched becomes the

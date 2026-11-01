@@ -35,7 +35,7 @@ def refs(expr):
 
 def rtf_paragraphs(r):
     """plain text of the RTF paragraphs (pictures and control words dropped)"""
-    r = re.sub(r'\{\\pict.*?\}\s*(?=\\par|\})', '', r, flags=re.S)
+    r = re.sub(r'\{\\pict(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\}', '', r)    # pictures with their nested groups
     r = re.sub(r"\\'([0-9a-f]{2})", lambda m: bytes([int(m.group(1), 16)]).decode('cp1251'), r)
     r = re.sub(r'\\u(-?\d+)\?', lambda m: chr(int(m.group(1)) % 65536), r)
     out = []
@@ -72,10 +72,11 @@ def check(path):
                 break
     # circuit parameters
     names = [dec('&' + n) for n in re.findall(r'<CircuitParamName NameItem="&amp;([^"]*)"', x)]
-    used = {dec('&' + p) for p in re.findall(r'<Item Value="&amp;(?:ASC|UNI)([A-Za-z_][^"]*)"/>', x)}
+    used = {dec('&' + p) for p in re.findall(r'<Item Value="&amp;((?:ASC|UNI)[^"]*)"/>', x)}
     for n in names:
         if not any(re.search(r'\b%s\b' % re.escape(n), u) for u in used): warn.append('circuit parameter %s is not used by any part' % n)
-        for lab in re.findall(r'Output="&amp;(?:ASC|UNI)(%s[A-Za-z]+)' % re.escape(n), x):
+        for lab in [m for m in (dec('&' + o) for o in re.findall(r'Output="&amp;((?:ASC|UNI)[^"]*)"', x))
+                    for m in re.findall(r'%s[A-Za-z]+' % re.escape(n), m)]:
             warn.append('a label reads «%s»: add subst {%r: %r} so it shows the parameter alone' % (lab, lab, n))
     # Batched
     states = AN.sim_states(x)
@@ -98,6 +99,9 @@ def check(path):
                 if tm == 'calculate' or float(tm) > 1 / (100 * n * f) * 1.0001:
                     warn.append('%s %s: max step %s is coarse for %d harmonics of %g Hz — use tmax ≤ %g' % (
                         b.key, t, tm, n, f, 1 / (100 * n * f)))
+            if b.key == 'AC' and a['vscale'] == '2' and any(v['NAME'].lower().startswith('db(') for v in sel):
+                warn.append('AC %s: the variable is already in dB (db(…)) and the vertical scale is Decibel — the graph may show '
+                            'dB of dB; give V(out)/V(in) with the Decibel scale, or db(…) with the linear scale' % t)
             if b.key in ('AC', 'NOISE'):
                 fo = a if b.key == 'AC' else a.get('FREQ_OPT')
                 if fo['VARIATION'] != 'lin' and float(fo['NPOINTS_PER_VARIATION']) < 50:
@@ -110,7 +114,7 @@ def check(path):
                     n = a[k].lstrip('$').lower()
                     if n and n not in nets: err.append('NOISE %s: %s %s is not a net of the circuit' % (t, k, a[k]))
             if b.key == 'PSWEEP' and a['SweepType'] == '3':
-                p = a.get('VariableParamToSweep')['name']
+                p = AN.text(a.get('VariableParamToSweep')['name'])
                 if p.lower() not in {n.lower() for n in names}: err.append('PSWEEP %s sweeps %s — no such circuit parameter' % (t, p))
     # description
     import describe

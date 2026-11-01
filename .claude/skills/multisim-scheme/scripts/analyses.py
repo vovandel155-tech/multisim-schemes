@@ -211,7 +211,7 @@ def set_psweep(a, param, values, current=None, inner='tran', tstop=1e-3, tstart=
     _set(v, 'Variation', '3')                                  # 3 — list of values
     _set(v, 'Start', '%g' % values[0]); _set(v, 'Stop', '%g' % values[-1]); _set(v, 'NumItems', '1')
     _set(v, 'List', [Node('-', '-', '%g' % x) for x in values])
-    _set(a, 'VariableParamToSweep', [Node('name', 'string', param.lower()), Node('value', 'string', '%g' % (values[0] if current is None else current)),
+    _set(a, 'VariableParamToSweep', [Node('name', 'string', __import__('msgen').enc(param.lower())[4:]), Node('value', 'string', '%g' % (values[0] if current is None else current)),
                                       Node('paramtype', 'long', '4')])
     _set(a, 'GroupTraces', '1')
     set_tran(a.get('Tran'), tstop, tstart, tmax, ic)
@@ -370,7 +370,7 @@ def settings_text(b, names={}):
             'spectral density' if a['SetPointsPerSummary'] == '1' else 'integrated over the range')
     if k == 'PSWEEP' and a['SweepType'] == '3':
         v = a.get('VarParamSweep'); p = a.get('VariableParamToSweep')
-        return 'circuit parameter %s = %s; for each: Transient %s' % (names.get(p['name'], p['name']), ', '.join(n.value for n in v.get('List').value),
+        return 'circuit parameter %s = %s; for each: Transient %s' % (names.get(text(p['name']), text(p['name'])), ', '.join(n.value for n in v.get('List').value),
                                                                      tran(a.get('Tran')))
     return ''
 

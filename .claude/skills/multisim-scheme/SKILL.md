@@ -53,7 +53,8 @@ Multisim task:
    part around or added one, find out why, tell the user, and check that each part does what the text says about it
    (bias diodes conduct at rest, a bias resistor sets the current…).
 6. **Analyses** — [reference/analyses.md](reference/analyses.md). Every quantity from step 1 MUST be an output variable
-   (a gain in dB is `db(V(out)/V(in))`, not a formula in the description). Currents through a resistor are
+   (a gain in dB is `db(V(out)/V(in))`, not a formula in the description; in AC Sweep `V(out)/V(in)` with `vscale='db'`).
+   Titles (Grapher page names) in the user's language. A circuit parameter has the name the user gave (`Uвх` works). Currents through a resistor are
    `(V(a)-V(b))/R`. A source amplitude set by a circuit parameter: `subst={'.2':'Uin','UinVpk':'Uin'}`.
 7. **Expected values MUST come from the built file**: `spice.run('out.ms14', 'op; print v(4) i(vv1); …')` — it uses the
    file's real supply, parts and parameters. Never compute them from a netlist you wrote yourself (a model once reported
