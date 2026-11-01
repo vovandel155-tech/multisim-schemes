@@ -7,7 +7,8 @@ description: Builds NI Multisim 14 schematics (.ms14) that open without dialogs 
 
 A scheme is a short Python script on `scripts/scheme.py`: parts on grid cells, wires, `build()`. The skill clones every
 part from files saved by Multisim itself, writes the file, checks it and simulates it in ngspice.
-Talk to the user in their language; scripts and comments stay in English.
+**Language: everything the user will read is in the user's language** — the chat, Grapher page titles, the description,
+labels you choose, circuit parameter names they gave (`Uвх` works). Scripts and code comments stay in English.
 
 ## Step 0 — update the skill (every new chat, before any work)
 ```bash
@@ -53,8 +54,8 @@ Multisim task:
    part around or added one, find out why, tell the user, and check that each part does what the text says about it
    (bias diodes conduct at rest, a bias resistor sets the current…).
 6. **Analyses** — [reference/analyses.md](reference/analyses.md). Every quantity from step 1 MUST be an output variable
-   (a gain in dB is `db(V(out)/V(in))`, not a formula in the description; in AC Sweep `V(out)/V(in)` with `vscale='db'`).
-   Titles (Grapher page names) in the user's language. A circuit parameter has the name the user gave (`Uвх` works). Currents through a resistor are
+   (a gain in dB is `db(V(out)/V(in))` in Single Frequency AC, not a formula in the description). In AC Sweep MUST be
+   `V(out)/V(in)` with `vscale='db'`: `db(…)` on the Decibel axis is dB of dB (verified: 20.8 dB showed as 26.4). Currents through a resistor are
    `(V(a)-V(b))/R`. A source amplitude set by a circuit parameter: `subst={'.2':'Uin','UinVpk':'Uin'}`.
 7. **Expected values MUST come from the built file**: `spice.run('out.ms14', 'op; print v(4) i(vv1); …')` — it uses the
    file's real supply, parts and parameters. Never compute them from a netlist you wrote yourself (a model once reported

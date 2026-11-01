@@ -80,6 +80,9 @@ def check(path):
             warn.append('a label reads «%s»: add subst {%r: %r} so it shows the parameter alone' % (lab, lab, n))
     # Batched
     states = AN.sim_states(x)
+    if states and states[0][2].startswith('&ASC') and '_uc' in states[0][2]:
+        err.append('analysis settings hold non-ASCII text under &ASC: Multisim shows it as _uc… and does not find such a '
+                   'parameter — write them with analyses.add_batched / Scheme (they mark it &UNI)')
     if states:
         prefix, root = AN.loads(states[0][2])
         batch = root[0].get('ANALYSES').get('ANALYSIS_LIST').value
@@ -100,8 +103,8 @@ def check(path):
                     warn.append('%s %s: max step %s is coarse for %d harmonics of %g Hz — use tmax ≤ %g' % (
                         b.key, t, tm, n, f, 1 / (100 * n * f)))
             if b.key == 'AC' and a['vscale'] == '2' and any(v['NAME'].lower().startswith('db(') for v in sel):
-                warn.append('AC %s: the variable is already in dB (db(…)) and the vertical scale is Decibel — the graph may show '
-                            'dB of dB; give V(out)/V(in) with the Decibel scale, or db(…) with the linear scale' % t)
+                err.append('AC %s: db(…) on a Decibel axis — Multisim takes dB of dB (20.8 dB shows as 26.4, the phase is 0); '
+                           'give V(out)/V(in) and keep the Decibel scale' % t)
             if b.key in ('AC', 'NOISE'):
                 fo = a if b.key == 'AC' else a.get('FREQ_OPT')
                 if fo['VARIATION'] != 'lin' and float(fo['NPOINTS_PER_VARIATION']) < 50:

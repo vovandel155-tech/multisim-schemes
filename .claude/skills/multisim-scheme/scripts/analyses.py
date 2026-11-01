@@ -218,7 +218,7 @@ def set_psweep(a, param, values, current=None, inner='tran', tstop=1e-3, tstart=
 
 
 def circuit_params(R, params, title):
-    """Circuit parameters (Tools → Circuit parameters) on the main sheet: {'Uin': 0.2}. A component parameter whose
+    """Circuit parameters (View → Circuit Parameters) on the main sheet: {'Uin': 0.2}. A component parameter whose
     value is a parameter name ('Uin' put in by `subst`) is marked as an expression (paramindicators = 0)."""
     import xml.etree.ElementTree as ET
     from msgen import enc
@@ -265,7 +265,9 @@ def add_batched(R, items, replace=False):
         if SETTERS[it['kind']]: SETTERS[it['kind']](b.get('ANALYSIS'), **it.get('opts', {}))
         if it.get('max_points'): _set(b, 'MAX_POINTS', str(it['max_points']))
         batch.value.append(b)
-    dg.set('SimState', dumps(prefix, root))
+    text_ = dumps('', root)
+    if '_uc' in text_: prefix = '&UNI'           # non-ASCII inside (Cyrillic titles, parameter names): &ASC leaves _uc undecoded
+    dg.set('SimState', prefix + text_)
     ext = next(x for x in R.iter('Extension') if x.get('Class') == 'CMultisimExtension')
     ext.set('ActiveAnalysis', '&ASCbatched')
 

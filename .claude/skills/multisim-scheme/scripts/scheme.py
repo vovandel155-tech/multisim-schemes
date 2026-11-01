@@ -206,7 +206,7 @@ class Scheme:
         # heading, ## subheading, paragraphs, - bullets, | table | rows |, **bold**, *italic*, R_{н}, 10^{-3}"""
         s.desc=markup
     def param(s,name,value):
-        """circuit parameter (Tools → Circuit parameters): a part uses it through subst, e.g. the amplitude of an
+        """circuit parameter (View → Circuit Parameters): a part uses it through subst, e.g. the amplitude of an
         AC source — part(..., subst={'.2':'Uin'}); swept by psweep()"""
         s.params[name]=value
     def psweep(s,variables,param,values,**k):

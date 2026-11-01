@@ -7,10 +7,11 @@ Read it when the user wants analyses in the file or numbers to compare with Mult
 
 ## Analyses (Batched) — `scripts/analyses.py`
 **Before giving the file away:** every quantity the user asked for is an output variable of some analysis (a gain in
-dB — `db(V(out)/V(in))` in Single Frequency AC; in AC Sweep give `V(out)/V(in)` and `vscale='db'`, not `db(…)` on a
-Decibel axis; a current through a resistor — `(V(a)-V(b))/R`, not `V(a)/R`); every net and source named in
+dB — `db(V(out)/V(in))` in Single Frequency AC; in AC Sweep give `V(out)/V(in)` and `vscale='db'` — `db(…)` on a Decibel axis is
+dB of dB, verified in Multisim: 20.8 dB showed as 26.4 and the phase as 0; a current through a resistor — `(V(a)-V(b))/R`, not `V(a)/R`); every net and source named in
 a variable exists — `check.py` reports a variable that names a missing net or source as an ERROR.
-Simulate → Analyses and Simulation → **Batched**: a list of analyses saved in the file; the user presses **Run** and
+Simulate → Analyses and Simulation → **Batched**. Titles, like everything the user reads, are in the user's language
+(Cyrillic in titles and parameter names is written under the `&UNI` mark — `&ASC` would show `_uc…`). a list of analyses saved in the file; the user presses **Run** and
 gets one Grapher page per analysis (its title is the page name). The skill writes the list; Batched becomes the
 active analysis. Variables — as in the Output tab: `'V(2)'`, `'V(outl)-V(outr)'`, `'I(V1)'`, `'db(V(4)/V(2))'`,
 `'(V(a)-V(b))^2/8'`; nets are the net names (the numbers the `build()` report prints, or the names in the file).
@@ -24,7 +25,7 @@ active analysis. Variables — as in the Output tab: `'V(2)'`, `'V(outl)-V(outr)
   graph there (`bars=True` on a log scale makes every bar look the same).
 - `S.noise('VIN', output, ref='0', fstart=20, fstop=20e3, points=100, spectrum=False, title=)` — Noise referred to source
   `VIN`, output between nets `output` and `ref`; `spectrum=False` — inoise_total/onoise_total, `True` — spectral density.
-- `S.param('Uin', 0.2)` — a circuit parameter (Tools → Circuit parameters); a part uses it through
+- `S.param('Uin', 0.2)` — a circuit parameter (View → Circuit Parameters); a part uses it through
   `subst={'.2':'Uin','UinVpk':'Uin'}` (value and label). `S.psweep(vars, 'Uin', [0.1, 0.2, 0.5], tstart=, tstop=, tmax=, ic=, title=)` —
   Parameter Sweep over it, a Transient for every value, all traces on one plot.
 - Every method takes `max_points=` (Analysis options → Maximum number of points; raise to 1000000 for long transients
